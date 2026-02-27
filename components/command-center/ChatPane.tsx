@@ -11,8 +11,10 @@ import {
   Trash2,
   Check,
   X,
+  Paperclip,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { sendChatMessage } from '@/lib/api';
 import ChatMessage from './ChatMessage';
 import {
   DropdownMenu,
@@ -41,12 +43,20 @@ export default function ChatPane({
   const [input, setInput] = useState('');
   const [loadingThreads, setLoadingThreads] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [sending, setSending] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const agent = AGENT_CONFIG[activeAgent];
+
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, []);
 
   const fetchThreads = useCallback(async () => {
     const { data } = await supabase
@@ -84,17 +94,46 @@ export default function ChatPane({
 
     if (data) setMessages(data);
     setLoadingMessages(false);
-  }, [activeThreadId]);
+    setTimeout(scrollToBottom, 100);
+  }, [activeThreadId, scrollToBottom]);
 
   useEffect(() => {
     fetchMessages();
   }, [activeThreadId]);
 
+  // Real-time subscription for new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    if (!activeThreadId) return;
+
+    const channel = supabase
+      .channel('chat-' + activeThreadId)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: 'thread_id=eq.' + activeThreadId,
+        },
+        (payload) => {
+          setMessages((prev) => {
+            // Avoid duplicates
+            if (prev.find((m) => m.id === payload.new.id)) return prev;
+            return [...prev, payload.new as ChatMsg];
+          });
+          setTimeout(scrollToBottom, 100);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeThreadId, scrollToBottom]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (renamingId && renameInputRef.current) {
@@ -169,30 +208,65 @@ export default function ChatPane({
     }
   }
 
-  async function sendMessage(e: React.FormEvent) {
+  async function handleSend(e: React.FormEvent) {
     e.preventDefault();
-    if (!input.trim() || !activeThreadId) return;
+    if (!input.trim() || !activeThreadId || sending) return;
 
-    const newMsg = {
-      agent_name: 'User',
-      content: input.trim(),
-      thread_id: activeThreadId,
-    };
+    const msg = input.trim();
     setInput('');
+    setSending(true);
 
-    const { data } = await supabase
-      .from('chat_messages')
-      .insert(newMsg)
-      .select()
-      .maybeSingle();
-
-    if (data) {
-      setMessages((prev) => [...prev, data]);
-      await supabase
-        .from('chat_threads')
-        .update({ updated_at: new Date().toISOString() })
-        .eq('id', activeThreadId);
+    try {
+      await sendChatMessage(activeThreadId, msg, 'Cody');
+    } catch (err) {
+      console.error('Send failed:', err);
+      setInput(msg); // Restore on failure
+    } finally {
+      setSending(false);
+      inputRef.current?.focus();
     }
+  }
+
+  async function handleFileUpload() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.onchange = async (e: any) => {
+      const files = Array.from(e.target.files || []) as File[];
+      for (const file of files) {
+        const storagePath = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const { error } = await supabase.storage
+          .from('uploads')
+          .upload(storagePath, file, { contentType: file.type });
+
+        if (!error) {
+          const { data: urlData } = supabase.storage.from('uploads').getPublicUrl(storagePath);
+          // Send as a message with file attachment
+          await sendChatMessage(
+            activeThreadId!,
+            '[File: ' + file.name + '](' + urlData.publicUrl + ') (' + formatBytes(file.size) + ')',
+            'Cody'
+          );
+          // Also track in file_uploads
+          await supabase.from('file_uploads').insert({
+            filename: file.name,
+            storage_path: storagePath,
+            content_type: file.type,
+            size_bytes: file.size,
+            uploaded_by: 'user',
+          });
+        }
+      }
+    };
+    fileInput.click();
+  }
+
+  function formatBytes(bytes: number) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
   function formatTime(dateStr: string) {
@@ -207,14 +281,15 @@ export default function ChatPane({
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return 'now';
-    if (mins < 60) return `${mins}m`;
+    if (mins < 60) return mins + 'm';
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h`;
-    return `${Math.floor(hrs / 24)}d`;
+    if (hrs < 24) return hrs + 'h';
+    return Math.floor(hrs / 24) + 'd';
   }
 
   return (
     <div className="flex h-full flex-col bg-space-card/50 backdrop-blur-xl">
+      {/* Agent selector */}
       <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2.5">
         {AGENT_IDS.map((id) => {
           const cfg = AGENT_CONFIG[id];
@@ -228,27 +303,26 @@ export default function ChatPane({
               whileTap={{ scale: 0.95 }}
               className="relative flex h-8 w-8 items-center justify-center rounded-full border-[1.5px] transition-all"
               style={{
-                borderColor: isActive ? `${cfg.color}70` : `${cfg.color}20`,
-                boxShadow: isActive ? `0 0 12px ${cfg.color}30` : 'none',
-                backgroundColor: isActive ? `${cfg.color}12` : 'transparent',
+                borderColor: isActive ? cfg.color + '70' : cfg.color + '20',
+                boxShadow: isActive ? '0 0 12px ' + cfg.color + '30' : 'none',
+                backgroundColor: isActive ? cfg.color + '12' : 'transparent',
               }}
             >
               <Icon
                 className="h-3.5 w-3.5"
-                style={{ color: isActive ? cfg.color : `${cfg.color}60` }}
+                style={{ color: isActive ? cfg.color : cfg.color + '60' }}
               />
               {isActive && (
                 <motion.div
                   layoutId="agent-ring"
                   className="absolute inset-0 rounded-full border-[1.5px]"
-                  style={{ borderColor: `${cfg.color}50` }}
+                  style={{ borderColor: cfg.color + '50' }}
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
               <div
-                className={`absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-space-card ${
-                  cfg.status === 'online' ? 'bg-neon' : 'bg-gold'
-                }`}
+                className={'absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-space-card ' +
+                  (cfg.status === 'online' ? 'bg-neon' : 'bg-gold')}
               />
             </motion.button>
           );
@@ -263,6 +337,7 @@ export default function ChatPane({
         </button>
       </div>
 
+      {/* Thread list */}
       <div className="flex-shrink-0 overflow-y-auto scrollbar-thin border-b border-white/[0.06]"
         style={{ maxHeight: '35%' }}
       >
@@ -270,7 +345,7 @@ export default function ChatPane({
           <div className="flex items-center justify-center py-6">
             <div
               className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: `${agent.color}30`, borderTopColor: agent.color }}
+              style={{ borderColor: agent.color + '30', borderTopColor: agent.color }}
             />
           </div>
         ) : (
@@ -282,9 +357,8 @@ export default function ChatPane({
               <button
                 key={thread.id}
                 onClick={() => !isRenaming && onSelectThread(thread.id)}
-                className={`group relative flex w-full items-center gap-2 px-3 py-2 text-left transition-all ${
-                  isActive ? 'bg-white/[0.05]' : 'hover:bg-white/[0.02]'
-                }`}
+                className={'group relative flex w-full items-center gap-2 px-3 py-2 text-left transition-all ' +
+                  (isActive ? 'bg-white/[0.05]' : 'hover:bg-white/[0.02]')}
               >
                 {isActive && (
                   <motion.div
@@ -292,25 +366,20 @@ export default function ChatPane({
                     className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full"
                     style={{
                       backgroundColor: agent.color,
-                      boxShadow: `0 0 6px ${agent.color}60`,
+                      boxShadow: '0 0 6px ' + agent.color + '60',
                     }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
 
                 {thread.pinned && (
-                  <Pin
-                    className="h-2.5 w-2.5 flex-shrink-0 rotate-45 text-white/20"
-                  />
+                  <Pin className="h-2.5 w-2.5 flex-shrink-0 rotate-45 text-white/20" />
                 )}
 
                 <div className="flex flex-1 flex-col min-w-0">
                   {isRenaming ? (
                     <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        renameThread(thread.id);
-                      }}
+                      onSubmit={(e) => { e.preventDefault(); renameThread(thread.id); }}
                       className="flex items-center gap-1"
                     >
                       <input
@@ -325,10 +394,7 @@ export default function ChatPane({
                       </button>
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setRenamingId(null);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); setRenamingId(null); }}
                         className="text-white/30 hover:text-white/60"
                       >
                         <X className="h-3 w-3" />
@@ -336,11 +402,7 @@ export default function ChatPane({
                     </form>
                   ) : (
                     <>
-                      <span
-                        className={`truncate font-mono text-[11px] ${
-                          isActive ? 'text-white/80' : 'text-white/50'
-                        }`}
-                      >
+                      <span className={'truncate font-mono text-[11px] ' + (isActive ? 'text-white/80' : 'text-white/50')}>
                         {thread.title}
                       </span>
                       <span className="font-mono text-[9px] text-white/20">
@@ -366,30 +428,20 @@ export default function ChatPane({
                       className="min-w-[140px] border-white/[0.08] bg-space-card"
                     >
                       <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setRenamingId(thread.id);
-                          setRenameValue(thread.title);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); setRenamingId(thread.id); setRenameValue(thread.title); }}
                         className="gap-2 font-mono text-[11px] text-white/60"
                       >
                         <Pencil className="h-3 w-3" /> Rename
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          togglePin(thread);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); togglePin(thread); }}
                         className="gap-2 font-mono text-[11px] text-white/60"
                       >
                         <Pin className="h-3 w-3" />
                         {thread.pinned ? 'Unpin' : 'Pin to Top'}
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteThread(thread.id);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); deleteThread(thread.id); }}
                         className="gap-2 font-mono text-[11px] text-red-400/80"
                       >
                         <Trash2 className="h-3 w-3" /> Delete
@@ -403,6 +455,7 @@ export default function ChatPane({
         )}
       </div>
 
+      {/* Messages */}
       <div className="relative flex-1 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-[0.01]">
           <div
@@ -422,14 +475,14 @@ export default function ChatPane({
             <div className="flex h-full items-center justify-center">
               <div
                 className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-                style={{ borderColor: `${agent.color}30`, borderTopColor: agent.color }}
+                style={{ borderColor: agent.color + '30', borderTopColor: agent.color }}
               />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2">
               <agent.icon className="h-6 w-6 text-white/10" />
               <span className="font-mono text-[11px] text-white/20">
-                No messages yet
+                Send a message to {agent.name}
               </span>
             </div>
           ) : (
@@ -446,36 +499,50 @@ export default function ChatPane({
         </div>
       </div>
 
+      {/* Input */}
       <form
-        onSubmit={sendMessage}
+        onSubmit={handleSend}
         className="flex items-center gap-2 border-t border-white/[0.06] bg-space-card/30 px-3 py-2 backdrop-blur-xl"
       >
+        <button
+          type="button"
+          onClick={handleFileUpload}
+          className="flex h-6 w-6 items-center justify-center rounded-md text-white/20 hover:text-white/40 hover:bg-white/[0.05] transition-colors"
+        >
+          <Paperclip className="h-3.5 w-3.5" />
+        </button>
         <div
           className="font-mono text-[10px] select-none"
-          style={{ color: `${agent.color}40` }}
+          style={{ color: agent.color + '40' }}
         >
           &gt;_
         </div>
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={`Message ${agent.name}...`}
+          placeholder={'Message ' + agent.name + '...'}
           className="flex-1 bg-transparent font-mono text-xs text-white/80 placeholder:text-white/15 outline-none"
+          disabled={sending}
         />
         <motion.button
           type="submit"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          disabled={!input.trim()}
+          disabled={!input.trim() || sending}
           className="flex h-6 w-6 items-center justify-center rounded-md border transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
           style={{
-            borderColor: `${agent.color}30`,
-            backgroundColor: `${agent.color}10`,
-            color: `${agent.color}90`,
+            borderColor: agent.color + '30',
+            backgroundColor: agent.color + '10',
+            color: agent.color + '90',
           }}
         >
-          <Send className="h-3 w-3" />
+          {sending ? (
+            <div className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: agent.color + '60' }} />
+          ) : (
+            <Send className="h-3 w-3" />
+          )}
         </motion.button>
       </form>
     </div>

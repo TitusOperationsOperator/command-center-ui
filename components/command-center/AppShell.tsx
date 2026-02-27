@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server } from 'lucide-react';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -19,6 +19,7 @@ import MemoryFileView from './views/MemoryFileView';
 import ProjectsView from './views/ProjectsView';
 import ActivityView from './views/ActivityView';
 import FilesView from './views/FilesView';
+import SystemView from './views/SystemView';
 import type { AgentId, TabItem } from './types';
 
 const PINNED_TABS: TabItem[] = [
@@ -27,6 +28,7 @@ const PINNED_TABS: TabItem[] = [
   { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
   { id: 'files', label: 'Files', icon: Upload, pinned: true },
+  { id: 'system', label: 'System', icon: Server, pinned: true },
   { id: 'finops', label: 'FinOps', icon: DollarSign, pinned: true },
 ];
 
@@ -91,6 +93,8 @@ export default function AppShell() {
         return <ActivityView />;
       case 'files':
         return <FilesView />;
+      case 'system':
+        return <SystemView />;
       default:
         if (tab.type === 'memory-file') {
           return (
