@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, DollarSign, FileText } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload } from 'lucide-react';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -16,12 +16,18 @@ import DashboardView from './views/DashboardView';
 import MemoryView from './views/MemoryView';
 import FinOpsView from './views/FinOpsView';
 import MemoryFileView from './views/MemoryFileView';
+import ProjectsView from './views/ProjectsView';
+import ActivityView from './views/ActivityView';
+import FilesView from './views/FilesView';
 import type { AgentId, TabItem } from './types';
 
 const PINNED_TABS: TabItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, pinned: true },
+  { id: 'projects', label: 'Projects', icon: Folder, pinned: true },
+  { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
+  { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
+  { id: 'files', label: 'Files', icon: Upload, pinned: true },
   { id: 'finops', label: 'FinOps', icon: DollarSign, pinned: true },
-  { id: 'memory', label: 'Memory Files', icon: FileText, pinned: true },
 ];
 
 export default function AppShell() {
@@ -79,6 +85,12 @@ export default function AppShell() {
         return <FinOpsView />;
       case 'memory':
         return <MemoryView onOpenFile={openTab} />;
+      case 'projects':
+        return <ProjectsView />;
+      case 'activity':
+        return <ActivityView />;
+      case 'files':
+        return <FilesView />;
       default:
         if (tab.type === 'memory-file') {
           return (
