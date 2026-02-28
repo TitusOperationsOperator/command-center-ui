@@ -354,7 +354,7 @@ export default function ChatPane({
         try {
           const agentResponse = await gatewayChat.send(
             [{ role: 'user', content: fullMessage }],
-            undefined, // onToken � streaming text updates handled by hook
+            undefined, // onToken — streaming text updates handled by hook
             async (response) => {
               // Store agent response in Supabase for history
               if (response && response.trim()) {
@@ -462,7 +462,7 @@ export default function ChatPane({
             Live
           </div>
         ) : (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline � messages stored only">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline — messages stored only">
             <div className="h-1.5 w-1.5 rounded-full bg-white/20" />
             Local
           </div>
@@ -552,7 +552,7 @@ export default function ChatPane({
         </div>
       </div>
 
-      {/* ═══════════════ UPGRADED INPUT AREA ═══════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• UPGRADED INPUT AREA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="relative border-t border-white/[0.06]">
         {/* Slash hints */}
         <AnimatePresence>
@@ -665,7 +665,7 @@ export default function ChatPane({
               </DropdownMenu>
             </div>
 
-            <span className="text-[10px] text-white/10">⏎ Send · ⇧⏎ New line</span>
+            <span className="text-[10px] text-white/10">âŽ Send Â· â‡§âŽ New line</span>
           </div>
         </div>
       </div>
