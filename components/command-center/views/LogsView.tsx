@@ -14,7 +14,7 @@ export default function LogsView() {
     const { data } = await supabase
       .from('agent_log')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('event_time', { ascending: false })
       .limit(200);
     setLogs(data || []);
     setLoading(false);
@@ -22,7 +22,6 @@ export default function LogsView() {
 
   useEffect(() => { refresh(); }, []);
 
-  // Real-time
   useEffect(() => {
     const channel = supabase
       .channel('logs-view')
@@ -49,14 +48,19 @@ export default function LogsView() {
 
       <div className="glass-card p-0 overflow-hidden">
         <div className="max-h-[70vh] overflow-y-auto scrollbar-thin font-mono text-[11px]">
-          {logs.map((log: any, i: number) => (
-            <div key={log.id} className={'flex items-start gap-2 px-3 py-1.5 border-b border-white/[0.03] ' + (i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]')}>
-              <span className="text-white/20 w-[140px] flex-shrink-0">{new Date(log.created_at).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}</span>
-              <span className="text-neon/50 w-[80px] flex-shrink-0">{log.source || 'system'}</span>
-              <span className="text-gold/60 w-[120px] flex-shrink-0">{log.action}</span>
-              <span className="text-white/40 flex-1 truncate">{typeof log.detail === 'string' ? log.detail : JSON.stringify(log.detail)}</span>
-            </div>
-          ))}
+          {logs.map((log: any, i: number) => {
+            const time = log.event_time || log.created_at;
+            const source = log.channel || 'system';
+            const detail = typeof log.detail === 'object' ? (log.detail?.msg || JSON.stringify(log.detail)) : (log.detail || '');
+            return (
+              <div key={log.id} className={'flex items-start gap-2 px-3 py-1.5 border-b border-white/[0.03] ' + (i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]')}>
+                <span className="text-white/20 w-[140px] flex-shrink-0">{time ? new Date(time).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) : ''}</span>
+                <span className={'w-[80px] flex-shrink-0 ' + (source === 'titus' ? 'text-agent-titus/70' : source === 'looty' ? 'text-agent-looty/70' : source === 'minibolt' ? 'text-agent-bolt/70' : 'text-white/40')}>{source}</span>
+                <span className="text-gold/60 w-[140px] flex-shrink-0">{log.action}</span>
+                <span className="text-white/40 flex-1 truncate">{detail}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

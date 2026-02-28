@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, DollarSign, Zap, Clock, Cpu, Activity, Settings } from 'lucide-react';
+import { Shield, DollarSign, Zap, Clock, Cpu, Activity } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 const AGENTS: Record<string, any> = {
@@ -11,72 +11,63 @@ const AGENTS: Record<string, any> = {
     role: 'Operations Operator',
     model: 'anthropic/claude-opus-4-6',
     fallbacks: ['openai/gpt-4.1', 'openai/gpt-4.1-mini'],
-    workspace: 'workspaceanthropic',
     color: '#3b82f6',
     icon: Shield,
     heartbeat: '30m',
     activeHours: '07:00 - 23:00',
     capabilities: ['memory', 'email', 'research', 'web search', 'browser', 'file ops', 'subagents'],
+    channelFilter: 'titus',
   },
   looty: {
     name: 'Looty 🪙',
     role: 'Revenue Agent',
     model: 'google/gemini-3.1-pro',
     fallbacks: ['openai/gpt-4.1-mini'],
-    workspace: 'workspace-looty',
     color: '#ffd700',
     icon: DollarSign,
     heartbeat: '45m',
     activeHours: '07:00 - 23:00',
     capabilities: ['research', 'revenue analysis', 'content', 'market analysis'],
+    channelFilter: 'looty',
   },
   bolt: {
     name: 'Mini Bolt 🔨',
     role: 'Builder',
     model: 'anthropic/claude-opus-4-6',
     fallbacks: ['anthropic/claude-sonnet-4-5', 'openai/gpt-4.1-mini'],
-    workspace: 'workspace-minibolt',
     color: '#00ff41',
     icon: Zap,
-    heartbeat: 'none',
+    heartbeat: 'on-demand',
     activeHours: 'on-demand',
     capabilities: ['code', 'git', 'deploy', 'npm', 'build'],
+    channelFilter: 'minibolt',
   },
 };
 
-interface Props {
-  agentId: string;
-}
+interface Props { agentId: string; }
 
 export default function AgentDetailView({ agentId }: Props) {
   const [logs, setLogs] = useState<any[]>([]);
-  const [memories, setMemories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const agent = AGENTS[agentId] || AGENTS.titus;
   const Icon = agent.icon;
 
   useEffect(() => {
-    Promise.all([
-      supabase
-        .from('agent_log')
-        .select('*')
-        .ilike('source', '%' + agentId + '%')
-        .order('created_at', { ascending: false })
-        .limit(20),
-      supabase
-        .from('memories')
-        .select('id, title, category, importance, created_at')
-        .order('created_at', { ascending: false })
-        .limit(10),
-    ]).then(([logRes, memRes]) => {
-      setLogs(logRes.data || []);
-      setMemories(memRes.data || []);
-      setLoading(false);
-    });
-  }, [agentId]);
+    supabase
+      .from('agent_log')
+      .select('*')
+      .eq('channel', agent.channelFilter)
+      .order('event_time', { ascending: false })
+      .limit(20)
+      .then(({ data }) => {
+        setLogs(data || []);
+        setLoading(false);
+      });
+  }, [agentId, agent.channelFilter]);
 
   function relativeTime(dateStr: string) {
+    if (!dateStr) return '';
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return 'just now';
@@ -87,21 +78,13 @@ export default function AgentDetailView({ agentId }: Props) {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-neon/30 border-t-neon" />
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64"><div className="h-5 w-5 animate-spin rounded-full border-2 border-neon/30 border-t-neon" /></div>;
   }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
-      {/* Agent header */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-6"
-      >
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border-2" style={{ borderColor: agent.color + '50', backgroundColor: agent.color + '15' }}>
             <Icon className="h-6 w-6" style={{ color: agent.color }} />
@@ -117,20 +100,14 @@ export default function AgentDetailView({ agentId }: Props) {
         </div>
       </motion.div>
 
-      {/* Config grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* Config */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
           { label: 'Model', value: agent.model, icon: Cpu },
           { label: 'Heartbeat', value: agent.heartbeat, icon: Clock },
           { label: 'Active Hours', value: agent.activeHours, icon: Activity },
         ].map((item, i) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="glass-card p-4"
-          >
+          <motion.div key={item.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <item.icon className="h-3.5 w-3.5 text-white/30" />
               <span className="font-mono text-[10px] text-white/40">{item.label}</span>
@@ -160,21 +137,23 @@ export default function AgentDetailView({ agentId }: Props) {
         </div>
       </motion.div>
 
-      {/* Recent activity */}
+      {/* Activity */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="glass-card p-5">
         <h3 className="font-mono text-sm font-medium text-white/70 mb-3">Recent Activity</h3>
         <div className="space-y-2">
           {logs.length === 0 ? (
-            <p className="font-mono text-xs text-white/30">No recent activity logged</p>
-          ) : (
-            logs.map((log: any) => (
+            <p className="font-mono text-xs text-white/30">No recent activity logged for this agent</p>
+          ) : logs.map((log: any) => {
+            const detail = typeof log.detail === 'object' ? (log.detail?.msg || JSON.stringify(log.detail)) : (log.detail || '');
+            return (
               <div key={log.id} className="flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2">
                 <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: agent.color }} />
-                <span className="font-mono text-[11px] text-white/60 flex-1 truncate">{log.action}</span>
-                <span className="font-mono text-[9px] text-white/20">{relativeTime(log.created_at)}</span>
+                <span className="font-mono text-[10px] text-gold/60 w-[100px] flex-shrink-0">{log.action}</span>
+                <span className="font-mono text-[11px] text-white/60 flex-1 truncate">{detail}</span>
+                <span className="font-mono text-[9px] text-white/20">{relativeTime(log.event_time)}</span>
               </div>
-            ))
-          )}
+            );
+          })}
         </div>
       </motion.div>
     </div>

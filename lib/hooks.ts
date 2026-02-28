@@ -32,22 +32,31 @@ export function useAgentLog(limit = 30) {
       .select('*')
       .order('event_time', { ascending: false })
       .limit(limit)
-      .then(({ data }) => {
-        // Normalize: map event_time → created_at for compatibility
-        const normalized = (data || []).map((d: any) => ({
-          ...d,
-          created_at: d.event_time || d.created_at,
-          source: d.channel || d.source || 'system',
-        }));
-        setData(normalized);
+      .then(({ data: rows }) => {
+        // Normalize to common shape
+        setData((rows || []).map((r: any) => ({
+          id: r.id,
+          action: r.action,
+          detail: r.detail,
+          source: r.channel || 'system',
+          created_at: r.event_time || r.created_at,
+        })));
         setLoading(false);
       });
 
+    // Real-time subscription
     const channel = supabase
       .channel('agent_log_changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'agent_log' }, (payload) => {
-        const n = payload.new as any;
-        setData((prev) => [{ ...n, created_at: n.event_time || n.created_at, source: n.channel || 'system' }, ...prev].slice(0, limit));
+        const r = payload.new;
+        const normalized = {
+          id: r.id,
+          action: r.action,
+          detail: r.detail,
+          source: r.channel || 'system',
+          created_at: r.event_time || r.created_at,
+        };
+        setData((prev) => [normalized, ...prev].slice(0, limit));
       })
       .subscribe();
 
@@ -113,38 +122,4 @@ export function useStats() {
   }, []);
 
   return { stats, loading };
-}
-
-export function useApiUsage(filter: 'today' | '7d' | '30d' | 'all' = '7d') {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetch() {
-      let query = supabase
-        .from('api_usage')
-        .select('*')
-        .order('ts', { ascending: false })
-        .limit(1000);
-
-      if (filter === 'today') {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        query = query.gte('ts', today.toISOString());
-      } else if (filter === '7d') {
-        query = query.gte('ts', new Date(Date.now() - 7 * 86400000).toISOString());
-      } else if (filter === '30d') {
-        query = query.gte('ts', new Date(Date.now() - 30 * 86400000).toISOString());
-      }
-
-      const { data } = await query;
-      setData(data || []);
-      setLoading(false);
-    }
-    fetch();
-    const interval = setInterval(fetch, 30000);
-    return () => clearInterval(interval);
-  }, [filter]);
-
-  return { data, loading };
 }
