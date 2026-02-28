@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server, Shield, Coins, Zap, Clock, Terminal, Settings as SettingsIcon } from 'lucide-react';
 import {
@@ -48,6 +48,24 @@ export default function AppShell() {
   const [tabs, setTabs] = useState<TabItem[]>(PINNED_TABS);
   const [activeTabId, setActiveTabId] = useState('dashboard');
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Keyboard shortcuts: Alt+1-9 for tabs, Alt+0 for last tab
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.altKey && e.key >= '1' && e.key <= '9') {
+        e.preventDefault();
+        const idx = parseInt(e.key) - 1;
+        if (idx < tabs.length) setActiveTabId(tabs[idx].id);
+      }
+      if (e.altKey && e.key === '0') {
+        e.preventDefault();
+        setActiveTabId(tabs[tabs.length - 1].id);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [tabs]);
 
   const handleSelectAgent = useCallback((agent: AgentId) => {
     setActiveAgent(agent);
