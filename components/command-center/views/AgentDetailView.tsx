@@ -20,7 +20,7 @@ interface AgentDetailViewProps {
 
 const AGENT_META: Record<string, any> = {
   titus: {
-    name: 'Titus', emoji: 'âš¡', icon: Shield, color: '#3b82f6',
+    name: 'Titus', emoji: 'Ã¢Å¡Â¡', icon: Shield, color: '#3b82f6',
     avatarUrl: 'https://eyekkfedhknhyevocgoa.supabase.co/storage/v1/object/public/images/agent/titus-avatar.jpg',
     role: 'Operations Operator', tagline: 'Infrastructure. Memory. Execution.',
     model: 'anthropic/claude-opus-4-6', workspace: 'C:\\Users\\titus\\.openclaw\\workspaceanthropic',
@@ -44,7 +44,7 @@ const AGENT_META: Record<string, any> = {
     mdFiles: ['SOUL.md', 'AGENTS.md', 'USER.md', 'TOOLS.md', 'MEMORY.md', 'HEARTBEAT.md', 'IDENTITY.md'],
   },
   looty: {
-    name: 'Looty', emoji: 'ðŸª™', icon: Coins, color: '#ffd700',
+    name: 'Looty', emoji: 'Ã°Å¸Âªâ„¢', icon: Coins, color: '#ffd700',
     avatarUrl: null,
     role: 'Revenue Agent', tagline: 'Find money. Make money. Track money.',
     model: 'google/gemini-3.1-pro', workspace: 'C:\\Users\\titus\\.openclaw\\workspace-looty',
@@ -64,7 +64,7 @@ const AGENT_META: Record<string, any> = {
     mdFiles: ['SOUL.md', 'AGENTS.md', 'TOOLS.md', 'MEMORY.md', 'budget-tracker.md', 'opportunity-log.md', 'phase2-plan.md'],
   },
   minibolt: {
-    name: 'Mini Bolt', emoji: 'ðŸ”©', icon: Zap, color: '#22c55e',
+    name: 'Mini Bolt', emoji: 'Ã°Å¸â€Â©', icon: Zap, color: '#22c55e',
     avatarUrl: null,
     role: 'Coding Agent', tagline: 'Build fast. Ship faster.',
     model: 'anthropic/claude-opus-4-6', workspace: 'C:\\Users\\titus\\.openclaw\\workspace-minibolt',
@@ -115,39 +115,31 @@ function relativeTime(dateStr: string) {
 
 // Looty-specific: Product & Content tab
 function LootyProductTab({ color }: { color: string }) {
-  const [products, setProducts] = useState<any>(null);
-  const [contentFiles, setContentFiles] = useState<string[]>([]);
+  const [dashboard, setDashboard] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const [fileContent, setFileContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load dashboard status
-    fetch('/api/looty-status').catch(() => {});
-    // For now use static data from what we know
-    setProducts({
-      name: 'The 2026 AI Freelance Catalyst',
-      subtitle: '50+ Prompts to Save 10 Hours a Week',
-      price: '$29',
-      platform: 'Gumroad',
-      status: 'Building',
-      completionPct: 85,
-      files: [
-        { name: 'Client Acquisition Prompts', file: 'prompts-client-acquisition.md', type: 'product', count: '18+ prompts' },
-        { name: 'Workflow Efficiency Prompts', file: 'prompts-workflow-efficiency.md', type: 'product', count: '18+ prompts' },
-        { name: 'Client Comms Prompts', file: 'prompts-client-comms.md', type: 'product', count: '18+ prompts' },
-        { name: 'Gumroad Listing Copy', file: 'gumroad-listing.md', type: 'listing' },
-      ],
-    });
-    setContentFiles([
-      'twitter-threads.md',
-      'linkedin-posts.md',
-      'reddit-post.md',
-    ]);
-    setLoading(false);
+    async function loadDashboard() {
+      const { data } = await supabase.from('kv_store').select('value').eq('key', 'looty_dashboard').maybeSingle();
+      if (data?.value) setDashboard(data.value);
+      setLoading(false);
+    }
+    loadDashboard();
+    const interval = setInterval(loadDashboard, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  if (loading || !products) return <div className="text-xs text-white/20 text-center py-8">Loading...</div>;
+  const status = dashboard?.status;
+  const products = dashboard?.products || [];
+  const content = dashboard?.content || [];
+  const completionPct = status?.productStatus?.completionPct || 0;
+
+  if (loading) return <div className="text-xs text-white/20 text-center py-8">Loading...</div>;
+
+  // Find selected file content
+  const allFiles = [...products, ...content];
+  const selectedContent = allFiles.find((f: any) => f.filename === selectedFile)?.content || '';
 
   return (
     <div className="space-y-6">
@@ -157,13 +149,13 @@ function LootyProductTab({ color }: { color: string }) {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Package className="h-5 w-5" style={{ color }} />
-              <h3 className="text-base font-semibold text-white/90">{products.name}</h3>
+              <h3 className="text-base font-semibold text-white/90">The 2026 AI Freelance Catalyst</h3>
             </div>
-            <p className="text-xs text-white/40">{products.subtitle}</p>
+            <p className="text-xs text-white/40">50+ Prompts to Save 10 Hours a Week</p>
           </div>
           <div className="text-right">
-            <span className="text-xl font-bold" style={{ color }}>{products.price}</span>
-            <p className="text-[10px] text-white/30">{products.platform}</p>
+            <span className="text-xl font-bold" style={{ color }}>$29</span>
+            <p className="text-[10px] text-white/30">Gumroad</p>
           </div>
         </div>
 
@@ -171,12 +163,12 @@ function LootyProductTab({ color }: { color: string }) {
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1.5">
             <span className="text-white/40">Progress</span>
-            <span style={{ color }}>{products.completionPct}%</span>
+            <span style={{ color }}>{completionPct}%</span>
           </div>
           <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: products.completionPct + '%' }}
+              animate={{ width: completionPct + '%' }}
               transition={{ duration: 1 }}
               className="h-full rounded-full"
               style={{ background: `linear-gradient(90deg, ${color}80, ${color})` }}
@@ -184,12 +176,12 @@ function LootyProductTab({ color }: { color: string }) {
           </div>
         </div>
 
-        {/* Status badge */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px]" style={{ background: color + '15', color: color }}>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px]" style={{ background: color + '15', color }}>
             <Circle className="h-1.5 w-1.5 fill-current" />
-            {products.status}
+            {status?.phase || 'Building'}
           </div>
+          <span className="text-[10px] text-white/20">{dashboard?.totalFiles || 0} files · Synced {dashboard?.syncedAt ? new Date(dashboard.syncedAt).toLocaleTimeString() : 'never'}</span>
         </div>
       </div>
 
@@ -197,34 +189,68 @@ function LootyProductTab({ color }: { color: string }) {
       <div>
         <h4 className="text-sm font-medium text-white/70 mb-3 flex items-center gap-2">
           <Package className="h-4 w-4" style={{ color: color + '80' }} />
-          Product Files
+          Product Files ({products.length})
         </h4>
         <div className="space-y-2">
-          {products.files.map((f: any) => (
-            <div key={f.file} className="flex items-center gap-3 py-2.5 px-3 rounded-lg border border-white/[0.04] hover:bg-white/[0.02] transition cursor-pointer group">
+          {products.map((f: any) => (
+            <div
+              key={f.filename}
+              onClick={() => setSelectedFile(selectedFile === f.filename ? null : f.filename)}
+              className={'flex items-center gap-3 py-2.5 px-3 rounded-lg border transition cursor-pointer group ' +
+                (selectedFile === f.filename ? 'border-white/[0.12] bg-white/[0.04]' : 'border-white/[0.04] hover:bg-white/[0.02]')}
+            >
               <FileText className="h-4 w-4 text-white/20" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-white/60">{f.name}</p>
-                {f.count && <p className="text-[9px] text-white/20">{f.count}</p>}
+                <p className="text-xs text-white/60">{f.filename.replace('.md', '').replace(/-/g, ' ')}</p>
+                <p className="text-[9px] text-white/20">{f.lines} lines · {(f.content.length / 1024).toFixed(1)}KB</p>
               </div>
-              <Copy className="h-3 w-3 text-white/10 group-hover:text-white/30 transition" />
+              <Copy
+                className="h-3 w-3 text-white/10 group-hover:text-white/30 transition"
+                onClick={(e: any) => { e.stopPropagation(); navigator.clipboard.writeText(f.content); }}
+              />
             </div>
           ))}
         </div>
       </div>
 
+      {/* File preview */}
+      {selectedFile && selectedContent && (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="glass-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs text-white/50">{selectedFile}</h4>
+            <button onClick={() => { navigator.clipboard.writeText(selectedContent); }} className="text-[10px] px-2 py-1 rounded bg-white/[0.04] text-white/30 hover:text-white/60 transition">
+              Copy All
+            </button>
+          </div>
+          <pre className="text-[11px] text-white/50 leading-relaxed max-h-[300px] overflow-y-auto scrollbar-thin whitespace-pre-wrap font-mono">
+            {selectedContent.slice(0, 3000)}{selectedContent.length > 3000 ? '\n\n... truncated ...' : ''}
+          </pre>
+        </motion.div>
+      )}
+
       {/* Marketing content */}
       <div>
         <h4 className="text-sm font-medium text-white/70 mb-3 flex items-center gap-2">
           <Megaphone className="h-4 w-4" style={{ color: color + '80' }} />
-          Marketing Content
+          Marketing Content ({content.length})
         </h4>
         <div className="space-y-2">
-          {contentFiles.map((f) => (
-            <div key={f} className="flex items-center gap-3 py-2.5 px-3 rounded-lg border border-white/[0.04] hover:bg-white/[0.02] transition cursor-pointer group">
+          {content.map((f: any) => (
+            <div
+              key={f.filename}
+              onClick={() => setSelectedFile(selectedFile === f.filename ? null : f.filename)}
+              className={'flex items-center gap-3 py-2.5 px-3 rounded-lg border transition cursor-pointer group ' +
+                (selectedFile === f.filename ? 'border-white/[0.12] bg-white/[0.04]' : 'border-white/[0.04] hover:bg-white/[0.02]')}
+            >
               <Megaphone className="h-4 w-4 text-white/20" />
-              <span className="text-xs text-white/60 flex-1">{f.replace('.md', '').replace(/-/g, ' ')}</span>
-              <Copy className="h-3 w-3 text-white/10 group-hover:text-white/30 transition" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-white/60">{f.filename.replace('.md', '').replace(/-/g, ' ')}</p>
+                <p className="text-[9px] text-white/20">{f.lines} lines</p>
+              </div>
+              <Copy
+                className="h-3 w-3 text-white/10 group-hover:text-white/30 transition"
+                onClick={(e: any) => { e.stopPropagation(); navigator.clipboard.writeText(f.content); }}
+              />
             </div>
           ))}
         </div>
@@ -483,7 +509,7 @@ export default function AgentDetailView({ agentId }: AgentDetailViewProps) {
                   </div>
                   <div className="flex-1">
                     <p className="text-xs text-white/70">{skill.name}</p>
-                    <p className="text-[9px]" style={{ color: meta.color + '70' }}>â— Active</p>
+                    <p className="text-[9px]" style={{ color: meta.color + '70' }}>Ã¢â€”Â Active</p>
                   </div>
                 </div>
               );
