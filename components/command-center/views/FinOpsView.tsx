@@ -93,6 +93,7 @@ export default function FinOpsView() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<TimeFilter>('7d');
   const [refreshing, setRefreshing] = useState(false);
+  const [historicalCost, setHistoricalCost] = useState(0);
 
   async function fetchData() {
     const filterDate = getFilterDate(filter);
@@ -105,8 +106,13 @@ export default function FinOpsView() {
       query = query.gte('ts', filterDate);
     }
 
-    const { data: rows } = await query;
-    setData((rows || []) as UsageRow[]);
+    const [usageResult, finopsResult] = await Promise.all([
+      query,
+      supabase.from('finops_costs').select('cost'),
+    ]);
+    setData((usageResult.data || []) as UsageRow[]);
+    const hist = (finopsResult.data || []).reduce((s: number, r: any) => s + Number(r.cost), 0);
+    setHistoricalCost(hist);
     setLoading(false);
     setRefreshing(false);
   }
@@ -128,7 +134,8 @@ export default function FinOpsView() {
   }
 
   // Aggregations
-  const totalCost = data.reduce((s, r) => s + Number(r.cost_usd), 0);
+  const trackedCost = data.reduce((s, r) => s + Number(r.cost_usd), 0);
+  const totalCost = filter === 'all' ? historicalCost + trackedCost : trackedCost;
   const totalIn = data.reduce((s, r) => s + r.input_tokens, 0);
   const totalOut = data.reduce((s, r) => s + r.output_tokens, 0);
   const totalCalls = data.length;
