@@ -81,6 +81,9 @@ export default function ChatPane({
   const [slashIndex, setSlashIndex] = useState(0);
   const [showTools, setShowTools] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const [realtimeStatus, setRealtimeStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('connected');
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const reconnectAttemptsRef = useRef(0);
   const gatewayStatus = useGatewayStatus();
   const gatewayChat = useGatewayChat(activeAgent);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -164,35 +167,81 @@ export default function ChatPane({
     fetchMessages();
   }, [activeThreadId]);
 
-  // REAL-TIME
+  // REAL-TIME with reconnection logic
   useEffect(() => {
     if (!activeThreadId) return;
-    const channel = supabase
-      .channel('chat-realtime-' + activeThreadId)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
-          filter: 'thread_id=eq.' + activeThreadId,
-        },
-        (payload) => {
-          const newMsg = payload.new as ChatMsg;
-          setMessages((prev) => {
-            if (prev.find((m) => m.id === newMsg.id)) return prev;
-            return [...prev, newMsg];
-          });
-          const sender = (newMsg.agent_name || '').toLowerCase();
-          if (sender !== 'user' && sender !== 'cody') {
-            setIsTyping(false);
-          }
-          scrollToBottom();
-        }
-      )
-      .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let isSubscribed = false;
+
+    const setupChannel = () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+
+      channel = supabase
+        .channel('chat-realtime-' + activeThreadId)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'chat_messages',
+            filter: 'thread_id=eq.' + activeThreadId,
+          },
+          (payload) => {
+            const newMsg = payload.new as ChatMsg;
+            setMessages((prev) => {
+              if (prev.find((m) => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg];
+            });
+            const sender = (newMsg.agent_name || '').toLowerCase();
+            if (sender !== 'user' && sender !== 'cody') {
+              setIsTyping(false);
+            }
+            scrollToBottom();
+          }
+        )
+        .subscribe((status) => {
+          console.log('Realtime subscription status:', status);
+
+          if (status === 'SUBSCRIBED') {
+            setRealtimeStatus('connected');
+            reconnectAttemptsRef.current = 0;
+            isSubscribed = true;
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            setRealtimeStatus('disconnected');
+            isSubscribed = false;
+
+            // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
+            reconnectAttemptsRef.current++;
+
+            console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current})`);
+            setRealtimeStatus('reconnecting');
+
+            if (reconnectTimeoutRef.current) {
+              clearTimeout(reconnectTimeoutRef.current);
+            }
+
+            reconnectTimeoutRef.current = setTimeout(() => {
+              console.log('Attempting to reconnect...');
+              setupChannel();
+            }, delay);
+          }
+        });
+    };
+
+    setupChannel();
+
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [activeThreadId, scrollToBottom]);
 
   // Poll backup
@@ -549,6 +598,23 @@ export default function ChatPane({
 
             {/* Messages */}
       <div className="relative flex-1 overflow-hidden flex flex-col">
+        {/* Reconnection banner */}
+        <AnimatePresence>
+          {realtimeStatus !== 'connected' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="flex items-center justify-center gap-2 border-b border-white/[0.06] bg-yellow-500/10 px-3 py-2"
+            >
+              <div className="h-2 w-2 animate-pulse rounded-full bg-yellow-400" />
+              <span className="text-[10px] text-yellow-400">
+                {realtimeStatus === 'disconnected' ? 'Connection lost' : 'Reconnecting...'}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Chat header */}
         {activeThreadId && uniqueMessages.length > 0 && (
           <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-2">
@@ -711,6 +777,9 @@ export default function ChatPane({
     </div>
   );
 }
+
+
+
 
 
 
