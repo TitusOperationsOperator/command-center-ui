@@ -7,9 +7,23 @@ import NotificationBell from './NotificationBell';
 
 export default function CommandBar() {
   const [open, setOpen] = useState(false);
+  const [dbConnected, setDbConnected] = useState(true);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // DB health check
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const { error } = await supabase.from('memories').select('id').limit(1);
+        setDbConnected(!error);
+      } catch { setDbConnected(false); }
+    };
+    check();
+    const iv = setInterval(check, 30000);
+    return () => clearInterval(iv);
+  }, []);
 
   // Cmd+K to open
   useEffect(() => {
@@ -48,6 +62,7 @@ export default function CommandBar() {
         className="flex items-center gap-2 border-b border-white/[0.04] bg-white/[0.01] px-4 py-1.5 transition-colors hover:bg-white/[0.03]"
       >
         <Search className="h-3 w-3 text-white/20" />
+        <span className={"h-1.5 w-1.5 rounded-full " + (dbConnected ? "bg-emerald-400" : "bg-red-400 animate-pulse")} />
         <span className="font-mono text-[11px] text-white/20">Search memories, files, commands...</span>
         <div className="ml-auto flex items-center gap-3">
           <NotificationBell />

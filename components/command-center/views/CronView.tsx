@@ -1,6 +1,7 @@
+'use client';
+
 import { useContextMenu } from '../ContextMenuProvider';
 import { useToast } from '../Toast';
-'use client';
 
 import { motion } from 'framer-motion';
 import { Clock, Play, Pause, Calendar } from 'lucide-react';
@@ -54,6 +55,8 @@ const CRON_JOBS = [
 ];
 
 export default function CronView() {
+  const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-4">
       <div className="flex items-center gap-2">
@@ -69,7 +72,16 @@ export default function CronView() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="glass-card p-4"
+            className="glass-card p-4 cursor-context-menu"
+              onContextMenu={(e: React.MouseEvent) => {
+                e.preventDefault();
+                showCtx(e.clientX, e.clientY, [
+                  { label: "Copy Job Name", icon: "📋", action: () => { navigator.clipboard.writeText(job.name); toast("Copied"); } },
+                  { label: "Copy Schedule", icon: "🕐", action: () => { navigator.clipboard.writeText(job.schedule); toast("Copied"); } },
+                  { divider: true, label: "", action: () => {} },
+                  { label: "Model: " + job.model, icon: "🤖", action: () => {}, disabled: true },
+                ]);
+              }}
           >
             <div className="flex items-center gap-3">
               <div className={'h-2.5 w-2.5 rounded-full ' + (job.status === 'active' ? 'bg-neon animate-pulse' : 'bg-white/20')} />

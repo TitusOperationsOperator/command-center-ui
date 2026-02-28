@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Server, Database, Wifi, HardDrive, RefreshCw, Shield, Clock } from 'lucide-react';
 import { getSystemHealth } from '@/lib/api';
+import { useContextMenu } from '../ContextMenuProvider';
+import { useToast } from '../Toast';
 
 export default function SystemView() {
+  const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
   const [health, setHealth] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
