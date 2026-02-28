@@ -18,7 +18,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { DollarSign, TrendingUp, ArrowDownRight, Cpu, RefreshCw, Calendar, Clock } from 'lucide-react';
+import { DollarSign, TrendingUp, ArrowDownRight, Cpu, RefreshCw, Calendar, Clock, Shield, Coins, Zap } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useContextMenu } from '../ContextMenuProvider';
 import { useToast } from '../Toast';
@@ -50,6 +50,12 @@ const AGENT_COLORS: Record<string, string> = {
   titus: '#3b82f6',
   looty: '#ffd700',
   minibolt: '#22c55e',
+};
+
+const AGENT_ICONS: Record<string, any> = {
+  titus: Shield,
+  looty: Coins,
+  minibolt: Zap,
 };
 
 type TimeFilter = 'today' | '7d' | '30d' | 'all';
@@ -230,6 +236,33 @@ export default function FinOpsView() {
     },
   ];
 
+  const agentCards = [
+    {
+      agent: 'titus',
+      label: 'Titus',
+      cost: byAgent['titus']?.cost || 0,
+      calls: byAgent['titus']?.calls || 0,
+      icon: Shield,
+      color: '#3b82f6',
+    },
+    {
+      agent: 'looty',
+      label: 'Looty',
+      cost: byAgent['looty']?.cost || 0,
+      calls: byAgent['looty']?.calls || 0,
+      icon: Coins,
+      color: '#ffd700',
+    },
+    {
+      agent: 'minibolt',
+      label: 'Mini Bolt',
+      cost: byAgent['minibolt']?.cost || 0,
+      calls: byAgent['minibolt']?.calls || 0,
+      icon: Zap,
+      color: '#22c55e',
+    },
+  ];
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -244,7 +277,7 @@ export default function FinOpsView() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-white/90">FinOps</h2>
-          <p className="text-xs text-white/30">API costs & token usage â€” live data</p>
+          <p className="text-xs text-white/30">API costs & token usage â€" live data</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex gap-0.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-0.5">
@@ -272,6 +305,43 @@ export default function FinOpsView() {
         </div>
       </div>
 
+      {/* Agent-specific cost cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {agentCards.map((card, i) => (
+          <motion.div
+            key={card.agent}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="glass-card p-5"
+            style={{ borderLeft: `3px solid ${card.color}40` }}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: `${card.color}15` }}
+                >
+                  <card.icon className="h-4 w-4" style={{ color: card.color }} />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-white/70">{card.label}</p>
+                  <p className="text-[10px] text-white/40">{card.calls} calls</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-semibold text-white/90">
+                ${card.cost.toFixed(2)}
+              </span>
+              <span className="text-[10px] text-white/30">
+                {totalCost > 0 ? `(${((card.cost / totalCost) * 100).toFixed(0)}%)` : '(0%)'}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {summaryCards.map((card, i) => (
@@ -279,7 +349,7 @@ export default function FinOpsView() {
             key={card.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
+            transition={{ delay: 0.24 + i * 0.08 }}
             className="glass-card p-5"
           >
             <div className="flex items-start justify-between">
@@ -308,7 +378,7 @@ export default function FinOpsView() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.54 }}
             className="glass-card p-6"
           >
             <div className="mb-6 flex items-center justify-between">
@@ -342,7 +412,7 @@ export default function FinOpsView() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.6 }}
               className="glass-card p-6"
             >
               <h3 className="mb-4 text-sm font-medium text-white/80">Cost by Agent</h3>
@@ -386,7 +456,7 @@ export default function FinOpsView() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.66 }}
               className="glass-card p-6"
             >
               <h3 className="mb-4 text-sm font-medium text-white/80">Cost by Model</h3>
@@ -431,7 +501,7 @@ export default function FinOpsView() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.72 }}
             className="glass-card p-6"
           >
             <h3 className="mb-4 text-sm font-medium text-white/80">Recent API Calls</h3>
