@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Send,
@@ -89,17 +89,6 @@ export default function ChatPane({
 
   const agent = AGENT_CONFIG[activeAgent];
   const slashMatches = matchCommands(input);
-
-  // Deduplicate messages by ID
-  const uniqueMessages = useMemo(() => {
-    const seen = new Map<string, ChatMsg>();
-    messages.forEach((msg) => {
-      if (!seen.has(msg.id)) {
-        seen.set(msg.id, msg);
-      }
-    });
-    return Array.from(seen.values());
-  }, [messages]);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -544,7 +533,7 @@ export default function ChatPane({
             <div className="flex h-full items-center justify-center">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: agent.color + '30', borderTopColor: agent.color }} />
             </div>
-          ) : uniqueMessages.length === 0 ? (
+          ) : messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ backgroundColor: agent.color + '15' }}>
                 <agent.icon className="h-6 w-6" style={{ color: agent.color + '60' }} />
@@ -553,7 +542,7 @@ export default function ChatPane({
               <span className="text-xs text-white/15">Type / for commands or just start talking</span>
             </div>
           ) : (
-            uniqueMessages.map((msg, i) => (
+            messages.map((msg, i) => (
               <ChatMessage key={msg.id} agentName={msg.agent_name} content={msg.content} timestamp={formatTime(msg.created_at)} index={i} />
             ))
           )}
@@ -683,5 +672,3 @@ export default function ChatPane({
     </div>
   );
 }
-
-
