@@ -46,7 +46,7 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
             id: 'cost-' + u.id,
             type: 'warning',
             title: 'High cost call: $' + Number(u.cost_usd).toFixed(2),
-            detail: u.agent + ' / ' + (u.model || '').split('/').pop() + ' — ' + u.input_tokens.toLocaleString() + ' tokens in',
+            detail: u.agent + ' / ' + (u.model || '').split('/').pop() + ' â€” ' + u.input_tokens.toLocaleString() + ' tokens in',
             time: u.ts,
             source: u.agent,
           });
@@ -126,7 +126,7 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
                         {n.detail && <p className="text-[10px] text-white/25 mt-0.5 truncate">{n.detail}</p>}
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[9px] text-white/15">{n.source}</span>
-                          <span className="text-[9px] text-white/15">·</span>
+                          <span className="text-[9px] text-white/15">Â·</span>
                           <span className="text-[9px] text-white/15">{relativeTime(n.time)}</span>
                         </div>
                       </div>

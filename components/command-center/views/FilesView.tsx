@@ -157,7 +157,7 @@ export default function FilesView() {
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-white/70 truncate">{file.filename}</p>
                 <p className="text-[10px] text-white/30">
-                  {formatBytes(file.size_bytes)} · {file.content_type || 'unknown'} · {new Date(file.created_at).toLocaleDateString()}
+                  {formatBytes(file.size_bytes)} Â· {file.content_type || 'unknown'} Â· {new Date(file.created_at).toLocaleDateString()}
                 </p>
               </div>
               <a

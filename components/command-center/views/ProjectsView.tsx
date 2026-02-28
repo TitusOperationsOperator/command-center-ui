@@ -60,10 +60,10 @@ export default function ProjectsView() {
             onContextMenu={(e) => {
               e.preventDefault();
               showCtx(e.clientX, e.clientY, [
-                { label: "Copy Project Name", icon: "📋", action: () => navigator.clipboard.writeText(project.name) },
-                { label: completed + "/" + total + " tasks done", icon: "📊", action: () => {}, disabled: true },
+                { label: "Copy Project Name", icon: "ðŸ“‹", action: () => navigator.clipboard.writeText(project.name) },
+                { label: completed + "/" + total + " tasks done", icon: "ðŸ“Š", action: () => {}, disabled: true },
                 { divider: true, label: "", action: () => {} },
-                { label: "Add Task", icon: "➕", action: async () => {
+                { label: "Add Task", icon: "âž•", action: async () => {
                   const title = prompt("Task title:");
                   if (title) {
                     await supabase.from("tasks").insert({ project_id: project.id, title, status: "todo", priority: 5 });

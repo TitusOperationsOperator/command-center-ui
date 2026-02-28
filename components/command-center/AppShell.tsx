@@ -32,9 +32,9 @@ import type { AgentId, TabItem } from './types';
 
 const PINNED_TABS: TabItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, pinned: true },
-  { id: 'agent-titus', label: 'Titus ⚡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
-  { id: 'agent-looty', label: 'Looty 🪙', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
-  { id: 'agent-minibolt', label: 'Mini Bolt 🔩', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
+  { id: 'agent-titus', label: 'Titus âš¡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
+  { id: 'agent-looty', label: 'Looty ðŸª™', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
+  { id: 'agent-minibolt', label: 'Mini Bolt ðŸ”©', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
   { id: 'projects', label: 'Projects', icon: Folder, pinned: true },
   { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },

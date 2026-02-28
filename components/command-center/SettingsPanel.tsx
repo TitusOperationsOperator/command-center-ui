@@ -85,7 +85,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         <p className="text-xs text-white/60">{api.name}</p>
                         <p className="text-[9px] text-white/20 font-mono">{api.key}</p>
                       </div>
-                      <span className="text-[9px] text-neon/50">●</span>
+                      <span className="text-[9px] text-neon/50">â—</span>
                     </div>
                   ))}
                 </div>
@@ -96,9 +96,9 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 <h3 className="text-xs font-medium text-white/50 uppercase tracking-wider mb-3">Agent Fleet</h3>
                 <div className="space-y-2">
                   {[
-                    { name: 'Titus ⚡', model: 'claude-opus-4-6', status: 'primary' },
-                    { name: 'Looty 🪙', model: 'gemini-3.1-pro', status: 'active' },
-                    { name: 'Mini Bolt 🔩', model: 'claude-opus-4-6', status: 'active' },
+                    { name: 'Titus âš¡', model: 'claude-opus-4-6', status: 'primary' },
+                    { name: 'Looty ðŸª™', model: 'gemini-3.1-pro', status: 'active' },
+                    { name: 'Mini Bolt ðŸ”©', model: 'claude-opus-4-6', status: 'active' },
                   ].map((agent) => (
                     <div key={agent.name} className="flex items-center justify-between py-2 px-3 rounded-lg border border-white/[0.04]">
                       <span className="text-xs text-white/60">{agent.name}</span>

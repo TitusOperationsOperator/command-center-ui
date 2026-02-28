@@ -107,11 +107,11 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
               onContextMenu={(e: React.MouseEvent) => {
                 e.preventDefault();
                 showCtx(e.clientX, e.clientY, [
-                  { label: "Copy Title", icon: "📋", action: () => navigator.clipboard.writeText(mem.title || "") },
-                  { label: "Copy Content", icon: "📝", action: () => navigator.clipboard.writeText(mem.content || "") },
-                  { label: "Filter: " + (mem.category || "none"), icon: "🔍", action: () => setSelectedCategory(mem.category) },
+                  { label: "Copy Title", icon: "ðŸ“‹", action: () => navigator.clipboard.writeText(mem.title || "") },
+                  { label: "Copy Content", icon: "ðŸ“", action: () => navigator.clipboard.writeText(mem.content || "") },
+                  { label: "Filter: " + (mem.category || "none"), icon: "ðŸ”", action: () => setSelectedCategory(mem.category) },
                   { divider: true, label: "", action: () => {} },
-                  { label: "Importance: " + (mem.importance || "?"), icon: "⭐", action: () => {}, disabled: true },
+                  { label: "Importance: " + (mem.importance || "?"), icon: "â­", action: () => {}, disabled: true },
                 ]);
               }}
                             onClick={() => onOpenFile({

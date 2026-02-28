@@ -244,7 +244,7 @@ export default function FinOpsView() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-white/90">FinOps</h2>
-          <p className="text-xs text-white/30">API costs & token usage — live data</p>
+          <p className="text-xs text-white/30">API costs & token usage â€” live data</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex gap-0.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-0.5">

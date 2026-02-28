@@ -74,11 +74,11 @@ export default function ActivityView() {
               onContextMenu={(e) => {
                 e.preventDefault();
                 show(e.clientX, e.clientY, [
-                  { label: 'Copy Action', icon: '📋', action: () => navigator.clipboard.writeText(item.action || '') },
-                  { label: 'Copy Detail', icon: '📝', action: () => navigator.clipboard.writeText(typeof item.detail === 'string' ? item.detail : JSON.stringify(item.detail)) },
-                  { label: 'Copy Source', icon: '🔗', action: () => navigator.clipboard.writeText(item.source || '') },
+                  { label: 'Copy Action', icon: 'ðŸ“‹', action: () => navigator.clipboard.writeText(item.action || '') },
+                  { label: 'Copy Detail', icon: 'ðŸ“', action: () => navigator.clipboard.writeText(typeof item.detail === 'string' ? item.detail : JSON.stringify(item.detail)) },
+                  { label: 'Copy Source', icon: 'ðŸ”—', action: () => navigator.clipboard.writeText(item.source || '') },
                   { divider: true, label: '', action: () => {} },
-                  { label: 'Filter by: ' + (item.source || 'system'), icon: '🔍', action: () => setFilter(item.source || '') },
+                  { label: 'Filter by: ' + (item.source || 'system'), icon: 'ðŸ”', action: () => setFilter(item.source || '') },
                 ]);
               }}
             >

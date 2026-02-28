@@ -120,7 +120,7 @@ export default function SettingsView() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-white/70">{user?.email || "Not signed in"}</p>
-              <p className="text-[10px] text-white/30">{user?.user_metadata?.name || "User"} • {user?.id?.slice(0, 8)}</p>
+              <p className="text-[10px] text-white/30">{user?.user_metadata?.name || "User"} â€¢ {user?.id?.slice(0, 8)}</p>
             </div>
             <button
               onClick={() => signOut()}

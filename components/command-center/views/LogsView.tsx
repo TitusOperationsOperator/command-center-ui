@@ -59,10 +59,10 @@ export default function LogsView() {
                 onContextMenu={(e) => {
                   e.preventDefault();
                   show(e.clientX, e.clientY, [
-                    { label: 'Copy Log Line', icon: '📋', action: () => navigator.clipboard.writeText(source + ' ' + log.action + ' ' + detail) },
-                    { label: 'Copy Detail', icon: '📝', action: () => navigator.clipboard.writeText(detail) },
+                    { label: 'Copy Log Line', icon: 'ðŸ“‹', action: () => navigator.clipboard.writeText(source + ' ' + log.action + ' ' + detail) },
+                    { label: 'Copy Detail', icon: 'ðŸ“', action: () => navigator.clipboard.writeText(detail) },
                     { divider: true, label: '', action: () => {} },
-                    { label: 'Source: ' + source, icon: '🔗', action: () => {}, disabled: true },
+                    { label: 'Source: ' + source, icon: 'ðŸ”—', action: () => {}, disabled: true },
                   ]);
                 }}
               >

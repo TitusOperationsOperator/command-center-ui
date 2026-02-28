@@ -145,7 +145,7 @@ export default function CommandPalette({ open, onClose, onNavigate }: CommandPal
                           >
                             <span className={idx === selectedIndex ? 'text-neon' : 'text-white/30'}>{cmd.icon}</span>
                             <span className="font-mono text-[11px] flex-1">{cmd.label}</span>
-                            {idx === selectedIndex && <span className="font-mono text-[9px] text-neon/50">Enter ↵</span>}
+                            {idx === selectedIndex && <span className="font-mono text-[9px] text-neon/50">Enter â†µ</span>}
                           </button>
                         );
                       })}
@@ -158,11 +158,11 @@ export default function CommandPalette({ open, onClose, onNavigate }: CommandPal
 
             {/* Footer */}
             <div className="border-t border-white/[0.04] px-4 py-2 flex items-center justify-between">
-              <span className="font-mono text-[9px] text-white/15">⌘K to toggle</span>
+              <span className="font-mono text-[9px] text-white/15">âŒ˜K to toggle</span>
               <div className="flex gap-2">
-                <kbd className="font-mono text-[9px] text-white/15 bg-white/[0.03] px-1 py-0.5 rounded">↑↓</kbd>
+                <kbd className="font-mono text-[9px] text-white/15 bg-white/[0.03] px-1 py-0.5 rounded">â†‘â†“</kbd>
                 <span className="font-mono text-[9px] text-white/10">navigate</span>
-                <kbd className="font-mono text-[9px] text-white/15 bg-white/[0.03] px-1 py-0.5 rounded">↵</kbd>
+                <kbd className="font-mono text-[9px] text-white/15 bg-white/[0.03] px-1 py-0.5 rounded">â†µ</kbd>
                 <span className="font-mono text-[9px] text-white/10">select</span>
               </div>
             </div>

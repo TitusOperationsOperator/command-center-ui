@@ -89,7 +89,7 @@ export default function LoginPage() {
                   type={showPw ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   required
                   className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] pl-9 pr-10 py-2.5 text-xs text-white/80 placeholder:text-white/15 outline-none focus:border-neon/30 focus:bg-neon/[0.02] transition-all"
                 />

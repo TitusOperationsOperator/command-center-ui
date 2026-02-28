@@ -20,7 +20,7 @@ interface AgentDetailViewProps {
 
 const AGENT_META: Record<string, any> = {
   titus: {
-    name: 'Titus', emoji: '⚡', icon: Shield, color: '#3b82f6',
+    name: 'Titus', emoji: 'âš¡', icon: Shield, color: '#3b82f6',
     avatarUrl: 'https://eyekkfedhknhyevocgoa.supabase.co/storage/v1/object/public/images/agent/titus-avatar.jpg',
     role: 'Operations Operator', tagline: 'Infrastructure. Memory. Execution.',
     model: 'anthropic/claude-opus-4-6', workspace: 'C:\\Users\\titus\\.openclaw\\workspaceanthropic',
@@ -44,7 +44,7 @@ const AGENT_META: Record<string, any> = {
     mdFiles: ['SOUL.md', 'AGENTS.md', 'USER.md', 'TOOLS.md', 'MEMORY.md', 'HEARTBEAT.md', 'IDENTITY.md'],
   },
   looty: {
-    name: 'Looty', emoji: '🪙', icon: Coins, color: '#ffd700',
+    name: 'Looty', emoji: 'ðŸª™', icon: Coins, color: '#ffd700',
     avatarUrl: null,
     role: 'Revenue Agent', tagline: 'Find money. Make money. Track money.',
     model: 'google/gemini-3.1-pro', workspace: 'C:\\Users\\titus\\.openclaw\\workspace-looty',
@@ -64,7 +64,7 @@ const AGENT_META: Record<string, any> = {
     mdFiles: ['SOUL.md', 'AGENTS.md', 'TOOLS.md', 'MEMORY.md', 'budget-tracker.md', 'opportunity-log.md', 'phase2-plan.md'],
   },
   minibolt: {
-    name: 'Mini Bolt', emoji: '🔩', icon: Zap, color: '#22c55e',
+    name: 'Mini Bolt', emoji: 'ðŸ”©', icon: Zap, color: '#22c55e',
     avatarUrl: null,
     role: 'Coding Agent', tagline: 'Build fast. Ship faster.',
     model: 'anthropic/claude-opus-4-6', workspace: 'C:\\Users\\titus\\.openclaw\\workspace-minibolt',
@@ -483,7 +483,7 @@ export default function AgentDetailView({ agentId }: AgentDetailViewProps) {
                   </div>
                   <div className="flex-1">
                     <p className="text-xs text-white/70">{skill.name}</p>
-                    <p className="text-[9px]" style={{ color: meta.color + '70' }}>● Active</p>
+                    <p className="text-[9px]" style={{ color: meta.color + '70' }}>â— Active</p>
                   </div>
                 </div>
               );

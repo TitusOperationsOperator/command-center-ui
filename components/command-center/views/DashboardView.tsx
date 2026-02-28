@@ -36,9 +36,9 @@ import {
 
 // Agent metadata
 const AGENTS = {
-  titus: { name: 'Titus', emoji: '⚡', icon: Shield, color: '#3b82f6', role: 'Operations' },
-  looty: { name: 'Looty', emoji: '🪙', icon: Coins, color: '#ffd700', role: 'Revenue' },
-  minibolt: { name: 'Mini Bolt', emoji: '🔩', icon: Zap, color: '#22c55e', role: 'Code' },
+  titus: { name: 'Titus', emoji: 'âš¡', icon: Shield, color: '#3b82f6', role: 'Operations' },
+  looty: { name: 'Looty', emoji: 'ðŸª™', icon: Coins, color: '#ffd700', role: 'Revenue' },
+  minibolt: { name: 'Mini Bolt', emoji: 'ðŸ”©', icon: Zap, color: '#22c55e', role: 'Code' },
 };
 
 function ChartTooltip({ active, payload, label }: any) {
@@ -398,7 +398,7 @@ export default function DashboardView() {
                         {u.agent}
                       </span>
                       <span className="text-[10px] text-white/30 truncate">
-                        {(u.model || '').split('/').pop()} · {formatTokens(u.input_tokens)} in / {formatTokens(u.output_tokens)} out
+                        {(u.model || '').split('/').pop()} Â· {formatTokens(u.input_tokens)} in / {formatTokens(u.output_tokens)} out
                       </span>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
@@ -462,14 +462,14 @@ export default function DashboardView() {
                       e.preventDefault();
                       const isDone = task.status === "done";
                       showCtx(e.clientX, e.clientY, [
-                        { label: isDone ? "Reopen Task" : "Mark Complete", icon: isDone ? "🔄" : "✅", action: async () => {
+                        { label: isDone ? "Reopen Task" : "Mark Complete", icon: isDone ? "ðŸ”„" : "âœ…", action: async () => {
                           await supabase.from("tasks").update({ status: isDone ? "todo" : "done", completed_at: isDone ? null : new Date().toISOString() }).eq("id", task.id);
                           fetchAll();
-                          toast(isDone ? "Task reopened" : "Task completed ✓");
+                          toast(isDone ? "Task reopened" : "Task completed âœ“");
                         }},
-                        { label: "Copy Title", icon: "📋", action: () => { navigator.clipboard.writeText(task.title); toast("Copied to clipboard"); } },
+                        { label: "Copy Title", icon: "ðŸ“‹", action: () => { navigator.clipboard.writeText(task.title); toast("Copied to clipboard"); } },
                         { divider: true, label: "", action: () => {} },
-                        { label: "Delete Task", icon: "🗑️", action: async () => {
+                        { label: "Delete Task", icon: "ðŸ—‘ï¸", action: async () => {
                           await supabase.from("tasks").delete().eq("id", task.id);
                           fetchAll();
                           toast("Task deleted", "error");
@@ -546,10 +546,10 @@ export default function DashboardView() {
             <h3 className="text-sm font-medium text-white/80 mb-3">Quick Actions</h3>
             <div className="space-y-2">
               {[
-                { label: 'Check Email', emoji: '📧', action: '/email' },
-                { label: 'Run Research', emoji: '🔍', action: '/research' },
-                { label: 'Status Report', emoji: '📋', action: '/status' },
-                { label: 'Memory Search', emoji: '🧠', action: '/memory' },
+                { label: 'Check Email', emoji: 'ðŸ“§', action: '/email' },
+                { label: 'Run Research', emoji: 'ðŸ”', action: '/research' },
+                { label: 'Status Report', emoji: 'ðŸ“‹', action: '/status' },
+                { label: 'Memory Search', emoji: 'ðŸ§ ', action: '/memory' },
               ].map((qa) => (
                 <button
                   key={qa.label}
@@ -569,13 +569,13 @@ export default function DashboardView() {
                   onContextMenu={(e) => {
                     e.preventDefault();
                     showCtx(e.clientX, e.clientY, [
-                      { label: "Run: " + qa.action, icon: "▶️", action: async () => {
+                      { label: "Run: " + qa.action, icon: "â–¶ï¸", action: async () => {
                         const { data: threads } = await supabase.from("chat_threads").select("id").eq("agent_id", "titus").limit(1);
                         if (threads && threads[0]) {
                           await supabase.from("chat_messages").insert({ thread_id: threads[0].id, sender: "user", content: qa.action, metadata: { source: "quick-action" } });
                         }
                       }},
-                      { label: "Copy Command", icon: "📋", action: () => navigator.clipboard.writeText(qa.action) },
+                      { label: "Copy Command", icon: "ðŸ“‹", action: () => navigator.clipboard.writeText(qa.action) },
                     ]);
                   }}
                 >

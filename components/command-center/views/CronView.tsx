@@ -76,10 +76,10 @@ export default function CronView() {
               onContextMenu={(e: React.MouseEvent) => {
                 e.preventDefault();
                 showCtx(e.clientX, e.clientY, [
-                  { label: "Copy Job Name", icon: "📋", action: () => { navigator.clipboard.writeText(job.name); toast("Copied"); } },
-                  { label: "Copy Schedule", icon: "🕐", action: () => { navigator.clipboard.writeText(job.schedule); toast("Copied"); } },
+                  { label: "Copy Job Name", icon: "ðŸ“‹", action: () => { navigator.clipboard.writeText(job.name); toast("Copied"); } },
+                  { label: "Copy Schedule", icon: "ðŸ•", action: () => { navigator.clipboard.writeText(job.schedule); toast("Copied"); } },
                   { divider: true, label: "", action: () => {} },
-                  { label: "Model: " + job.model, icon: "🤖", action: () => {}, disabled: true },
+                  { label: "Model: " + job.model, icon: "ðŸ¤–", action: () => {}, disabled: true },
                 ]);
               }}
           >
