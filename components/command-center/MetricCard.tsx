@@ -35,7 +35,7 @@ export default function MetricCard({
     >
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-[11px] uppercase tracking-widest text-white/40">
+          <span className="text-[11px] uppercase tracking-widest text-white/40">
             {label}
           </span>
           <span className="font-mono text-2xl font-semibold text-white/90">
@@ -60,13 +60,13 @@ export default function MetricCard({
           }`}
         />
         <span
-          className={`font-mono text-xs ${
+          className={`text-xs ${
             trend === 'up' ? 'text-neon/70' : 'text-red-400/70'
           }`}
         >
           {change}
         </span>
-        <span className="font-mono text-[10px] text-white/25">vs last week</span>
+        <span className="text-[10px] text-white/25">vs last week</span>
       </div>
     </motion.div>
   );

@@ -41,8 +41,8 @@ export default function ProjectsView() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       <div className="flex items-center gap-2 mb-2">
         <Folder className="h-5 w-5 text-neon/60" />
-        <h2 className="font-mono text-lg font-medium text-white/80">Projects & Tasks</h2>
-        <span className="font-mono text-xs text-white/30 ml-2">{projects.length} projects, {tasks.length} tasks</span>
+        <h2 className="text-lg font-medium text-white/80">Projects & Tasks</h2>
+        <span className="text-xs text-white/30 ml-2">{projects.length} projects, {tasks.length} tasks</span>
       </div>
 
       {projects.map((project: any, pi: number) => {
@@ -77,16 +77,16 @@ export default function ProjectsView() {
               <div className={"flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-mono border " + (statusColor[project.status] || statusColor.todo)}>
                 {project.status}
               </div>
-              <h3 className="font-mono text-sm font-medium text-white/90">{project.name}</h3>
+              <h3 className="text-sm font-medium text-white/90">{project.name}</h3>
               {total > 0 && (
-                <span className="font-mono text-[10px] text-white/30 ml-auto">
+                <span className="text-[10px] text-white/30 ml-auto">
                   {completed}/{total} done
                 </span>
               )}
             </div>
 
             {project.description && (
-              <p className="font-mono text-xs text-white/40 mb-3">{project.description}</p>
+              <p className="text-xs text-white/40 mb-3">{project.description}</p>
             )}
 
             {total > 0 && (
@@ -103,11 +103,11 @@ export default function ProjectsView() {
                     return (
                       <div key={task.id} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-white/[0.03]">
                         <Icon className={"h-3 w-3 " + (task.status === 'completed' ? 'text-green-400' : task.status === 'in_progress' ? 'text-gold' : 'text-white/30')} />
-                        <span className={"font-mono text-[11px] " + (task.status === 'completed' ? 'text-white/40 line-through' : 'text-white/70')}>
+                        <span className={"text-[11px] " + (task.status === 'completed' ? 'text-white/40 line-through' : 'text-white/70')}>
                           {task.title}
                         </span>
                         {task.assigned_to && (
-                          <span className="font-mono text-[9px] text-white/20 ml-auto">{task.assigned_to}</span>
+                          <span className="text-[9px] text-white/20 ml-auto">{task.assigned_to}</span>
                         )}
                       </div>
                     );
@@ -120,7 +120,7 @@ export default function ProjectsView() {
       })}
 
       {projects.length === 0 && (
-        <div className="text-center font-mono text-xs text-white/30 py-16">
+        <div className="text-center text-xs text-white/30 py-16">
           No projects yet. They'll appear here as agents create them.
         </div>
       )}

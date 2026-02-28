@@ -493,7 +493,7 @@ export default function AgentDetailView({ agentId }: AgentDetailViewProps) {
           <div className="glass-card p-4 space-y-2">
             <h4 className="text-xs text-white/40 mb-2">Agent Config</h4>
             <div className="flex justify-between text-xs"><span className="text-white/25">Model</span><span className="text-white/50 font-mono">{meta.model}</span></div>
-            <div className="flex justify-between text-xs"><span className="text-white/25">Workspace</span><span className="text-white/50 font-mono text-[10px] truncate max-w-[280px]">{meta.workspace}</span></div>
+            <div className="flex justify-between text-xs"><span className="text-white/25">Workspace</span><span className="text-white/50 text-[10px] truncate max-w-[280px]">{meta.workspace}</span></div>
             <div className="flex justify-between text-xs"><span className="text-white/25">Total Spend</span><span style={{ color: meta.color }}>${totalCost.toFixed(2)}</span></div>
             <div className="flex justify-between text-xs"><span className="text-white/25">Avg Cost/Call</span><span className="text-white/50">${totalCalls > 0 ? (totalCost / totalCalls).toFixed(4) : '0'}</span></div>
           </div>
@@ -566,7 +566,7 @@ export default function AgentDetailView({ agentId }: AgentDetailViewProps) {
                   <div
                     className={'text-xs px-3 py-1.5 rounded-lg ' + (item.isStatus
                       ? (isActive ? '' : 'bg-white/[0.04] text-white/30')
-                      : 'bg-white/[0.04] text-white/50 font-mono text-[10px] max-w-[250px] truncate')}
+                      : 'bg-white/[0.04] text-white/50 text-[10px] max-w-[250px] truncate')}
                     style={item.isStatus && isActive ? { background: meta.color + '15', color: meta.color } : {}}
                   >
                     {item.value}

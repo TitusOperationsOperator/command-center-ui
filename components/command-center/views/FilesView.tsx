@@ -94,8 +94,8 @@ export default function FilesView() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-4">
       <div className="flex items-center gap-2">
         <FolderOpen className="h-5 w-5 text-neon/60" />
-        <h2 className="font-mono text-lg font-medium text-white/80">Files</h2>
-        <span className="font-mono text-xs text-white/30 ml-2">{files.length} files</span>
+        <h2 className="text-lg font-medium text-white/80">Files</h2>
+        <span className="text-xs text-white/30 ml-2">{files.length} files</span>
       </div>
 
       {/* Drop zone */}
@@ -119,15 +119,15 @@ export default function FilesView() {
         {uploading ? (
           <div className="flex items-center justify-center gap-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-neon/30 border-t-neon" />
-            <span className="font-mono text-xs text-neon/70">Uploading...</span>
+            <span className="text-xs text-neon/70">Uploading...</span>
           </div>
         ) : (
           <>
             <Upload className={"mx-auto h-8 w-8 mb-2 " + (dragOver ? 'text-neon/70' : 'text-white/20')} />
-            <p className="font-mono text-xs text-white/40">
+            <p className="text-xs text-white/40">
               Drop files here or click to browse
             </p>
-            <p className="font-mono text-[10px] text-white/20 mt-1">
+            <p className="text-[10px] text-white/20 mt-1">
               Up to 50MB per file
             </p>
           </>
@@ -141,7 +141,7 @@ export default function FilesView() {
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-neon/30 border-t-neon" />
           </div>
         ) : files.length === 0 ? (
-          <div className="text-center font-mono text-xs text-white/30 py-12">
+          <div className="text-center text-xs text-white/30 py-12">
             No files uploaded yet
           </div>
         ) : (
@@ -155,8 +155,8 @@ export default function FilesView() {
             >
               <File className="h-4 w-4 text-neon/40 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="font-mono text-xs text-white/70 truncate">{file.filename}</p>
-                <p className="font-mono text-[10px] text-white/30">
+                <p className="text-xs text-white/70 truncate">{file.filename}</p>
+                <p className="text-[10px] text-white/30">
                   {formatBytes(file.size_bytes)} · {file.content_type || 'unknown'} · {new Date(file.created_at).toLocaleDateString()}
                 </p>
               </div>

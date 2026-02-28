@@ -43,7 +43,7 @@ export default function SettingsView() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs text-white/50">Supabase</span>
-            <span className={'font-mono text-xs ' + (health?.connected ? 'text-neon' : 'text-red-400')}>{health?.connected ? 'Connected' : 'Disconnected'}</span>
+            <span className={'text-xs ' + (health?.connected ? 'text-neon' : 'text-red-400')}>{health?.connected ? 'Connected' : 'Disconnected'}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xs text-white/50">Ping</span>
@@ -116,7 +116,7 @@ export default function SettingsView() {
       </motion.div>
         {/* Account */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card p-5 space-y-3">
-          <h3 className="font-mono text-xs font-medium text-white/50">Account</h3>
+          <h3 className="text-xs font-medium text-white/50">Account</h3>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-white/70">{user?.email || "Not signed in"}</p>

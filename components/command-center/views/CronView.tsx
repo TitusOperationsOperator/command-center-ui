@@ -61,8 +61,8 @@ export default function CronView() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-4">
       <div className="flex items-center gap-2">
         <Calendar className="h-5 w-5 text-neon/60" />
-        <h2 className="font-mono text-lg font-medium text-white/80">Cron Jobs</h2>
-        <span className="font-mono text-xs text-white/30 ml-2">{CRON_JOBS.length} scheduled</span>
+        <h2 className="text-lg font-medium text-white/80">Cron Jobs</h2>
+        <span className="text-xs text-white/30 ml-2">{CRON_JOBS.length} scheduled</span>
       </div>
 
       <div className="space-y-3">
@@ -87,14 +87,14 @@ export default function CronView() {
               <div className={'h-2.5 w-2.5 rounded-full ' + (job.status === 'active' ? 'bg-neon animate-pulse' : 'bg-white/20')} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-mono text-xs font-medium text-white/80">{job.name}</h3>
-                  <span className="font-mono text-[9px] text-neon/50 border border-neon/20 rounded-full px-1.5 py-0.5">{job.schedule}</span>
+                  <h3 className="text-xs font-medium text-white/80">{job.name}</h3>
+                  <span className="text-[9px] text-neon/50 border border-neon/20 rounded-full px-1.5 py-0.5">{job.schedule}</span>
                 </div>
-                <p className="font-mono text-[10px] text-white/40 mt-0.5">{job.description}</p>
+                <p className="text-[10px] text-white/40 mt-0.5">{job.description}</p>
                 <div className="flex gap-4 mt-1">
-                  <span className="font-mono text-[9px] text-white/25">Model: {job.model}</span>
-                  <span className="font-mono text-[9px] text-white/25">Last: {job.lastRun}</span>
-                  <span className="font-mono text-[9px] text-white/25">Next: {job.nextRun}</span>
+                  <span className="text-[9px] text-white/25">Model: {job.model}</span>
+                  <span className="text-[9px] text-white/25">Last: {job.lastRun}</span>
+                  <span className="text-[9px] text-white/25">Next: {job.nextRun}</span>
                 </div>
               </div>
               <Clock className="h-4 w-4 text-white/15 flex-shrink-0" />

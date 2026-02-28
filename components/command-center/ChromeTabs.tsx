@@ -30,7 +30,7 @@ export default function ChromeTabs({
         return (
           <div
             key={tab.id}
-            className={`group relative flex items-center gap-1.5 rounded-t-lg px-3 sm:px-4 py-1.5 font-mono text-[11px] transition-all flex-shrink-0 cursor-pointer ${
+            className={`group relative flex items-center gap-1.5 rounded-t-lg px-3 sm:px-4 py-1.5 text-[11px] transition-all flex-shrink-0 cursor-pointer ${
               isActive
                 ? 'bg-space-card text-white/90 z-10'
                 : 'text-white/35 hover:text-white/55 hover:bg-white/[0.03]'

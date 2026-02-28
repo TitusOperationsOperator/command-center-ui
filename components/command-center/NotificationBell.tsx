@@ -99,7 +99,7 @@ export default function NotificationBell() {
             animate={{ scale: 1 }}
             className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] rounded-full bg-red-500 flex items-center justify-center"
           >
-            <span className="font-mono text-[8px] text-white font-bold px-1">{unreadCount > 9 ? '9+' : unreadCount}</span>
+            <span className="text-[8px] text-white font-bold px-1">{unreadCount > 9 ? '9+' : unreadCount}</span>
           </motion.span>
         )}
       </button>
@@ -117,10 +117,10 @@ export default function NotificationBell() {
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
-                <span className="font-mono text-xs font-medium text-white/60">Notifications</span>
+                <span className="text-xs font-medium text-white/60">Notifications</span>
                 <button
                   onClick={markAllRead}
-                  className="font-mono text-[9px] text-neon/50 hover:text-neon transition-colors"
+                  className="text-[9px] text-neon/50 hover:text-neon transition-colors"
                 >
                   Mark all read
                 </button>
@@ -129,7 +129,7 @@ export default function NotificationBell() {
               {/* List */}
               <div className="overflow-y-auto max-h-[320px]">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center font-mono text-[10px] text-white/20">No notifications</div>
+                  <div className="px-4 py-8 text-center text-[10px] text-white/20">No notifications</div>
                 ) : (
                   notifications.map(n => (
                     <div
@@ -139,10 +139,10 @@ export default function NotificationBell() {
                       <div className="mt-0.5 flex-shrink-0">{typeIcon[n.type]}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="font-mono text-[10px] font-medium text-white/50 truncate">{n.title}</span>
-                          <span className="font-mono text-[8px] text-white/20 flex-shrink-0">{relTime(n.time)}</span>
+                          <span className="text-[10px] font-medium text-white/50 truncate">{n.title}</span>
+                          <span className="text-[8px] text-white/20 flex-shrink-0">{relTime(n.time)}</span>
                         </div>
-                        <p className="font-mono text-[10px] text-white/30 truncate mt-0.5">{n.message}</p>
+                        <p className="text-[10px] text-white/30 truncate mt-0.5">{n.message}</p>
                       </div>
                       {!n.read && <div className="h-1.5 w-1.5 rounded-full bg-neon flex-shrink-0 mt-1" />}
                     </div>

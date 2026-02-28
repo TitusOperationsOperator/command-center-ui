@@ -36,10 +36,10 @@ export default function ActivityView() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-4">
       <div className="flex items-center gap-2">
         <Activity className="h-5 w-5 text-neon/60" />
-        <h2 className="font-mono text-lg font-medium text-white/80">Activity Log</h2>
+        <h2 className="text-lg font-medium text-white/80">Activity Log</h2>
         <div className="ml-auto flex items-center gap-1.5">
           <div className="h-1.5 w-1.5 rounded-full bg-neon animate-pulse" />
-          <span className="font-mono text-[9px] text-neon/50">REAL-TIME</span>
+          <span className="text-[9px] text-neon/50">REAL-TIME</span>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ export default function ActivityView() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter activity..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 font-mono text-xs text-white/80 placeholder:text-white/20 outline-none focus:border-neon/30"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 text-xs text-white/80 placeholder:text-white/20 outline-none focus:border-neon/30"
         />
       </div>
 
@@ -60,7 +60,7 @@ export default function ActivityView() {
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-neon/30 border-t-neon" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center font-mono text-xs text-white/30 py-16">
+          <div className="text-center text-xs text-white/30 py-16">
             {filter ? 'No matching activity' : 'No agent activity recorded yet'}
           </div>
         ) : (
@@ -93,16 +93,16 @@ export default function ActivityView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[11px] font-medium text-white/70">
+                    <span className="text-[11px] font-medium text-white/70">
                       {item.source || 'system'}
                     </span>
-                    <span className="font-mono text-[10px] text-neon/50">{item.action}</span>
-                    <span className="font-mono text-[9px] text-white/20 ml-auto flex-shrink-0">
+                    <span className="text-[10px] text-neon/50">{item.action}</span>
+                    <span className="text-[9px] text-white/20 ml-auto flex-shrink-0">
                       {relativeTime(item.created_at)}
                     </span>
                   </div>
                   {item.detail && (
-                    <p className="font-mono text-[10px] text-white/40 mt-1 break-words">
+                    <p className="text-[10px] text-white/40 mt-1 break-words">
                       {typeof item.detail === 'string' ? item.detail : JSON.stringify(item.detail, null, 2)}
                     </p>
                   )}

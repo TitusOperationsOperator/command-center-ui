@@ -17,11 +17,11 @@ function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="glass-card rounded-lg border border-white/[0.1] px-4 py-3 shadow-2xl">
-      <p className="mb-2 font-mono text-xs text-white/50">{label}</p>
+      <p className="mb-2 text-xs text-white/50">{label}</p>
       {payload.map((entry: any, idx: number) => (
         <div key={idx} className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="font-mono text-xs text-white/70">
+          <span className="text-xs text-white/70">
             {entry.name}: ${Number(entry.value).toFixed(2)}
           </span>
         </div>
@@ -68,13 +68,13 @@ export default function TokenBurnChart() {
     >
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h3 className="font-mono text-sm font-medium text-white/80">Daily API Spend</h3>
-          <p className="font-mono text-[11px] text-white/30">Cost per day (all models)</p>
+          <h3 className="text-sm font-medium text-white/80">Daily API Spend</h3>
+          <p className="text-[11px] text-white/30">Cost per day (all models)</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-gold" />
-            <span className="font-mono text-[10px] text-white/40">Cost ($)</span>
+            <span className="text-[10px] text-white/40">Cost ($)</span>
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@ export default function TokenBurnChart() {
           </div>
         ) : data.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <span className="font-mono text-xs text-white/30">No cost data yet</span>
+            <span className="text-xs text-white/30">No cost data yet</span>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

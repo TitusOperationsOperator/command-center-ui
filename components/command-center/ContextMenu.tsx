@@ -77,7 +77,7 @@ export default function ContextMenu({ items, children, className }: ContextMenuP
                   onClick={() => { item.action(); setOpen(false); }}
                   disabled={item.disabled}
                   className={[
-                    'w-full flex items-center gap-2.5 px-3 py-1.5 text-left font-mono text-[11px] transition-colors',
+                    'w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[11px] transition-colors',
                     item.danger ? 'text-red-400/80 hover:bg-red-400/[0.08]' : 'text-white/60 hover:bg-white/[0.06] hover:text-white/80',
                     item.disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer',
                   ].join(' ')}

@@ -40,11 +40,11 @@ export default function SystemView() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       <div className="flex items-center gap-2">
         <Server className="h-5 w-5 text-neon/60" />
-        <h2 className="font-mono text-lg font-medium text-white/80">System Health</h2>
+        <h2 className="text-lg font-medium text-white/80">System Health</h2>
         <button
           onClick={refresh}
           disabled={loading}
-          className="ml-auto flex items-center gap-1.5 rounded-md border border-white/10 px-2.5 py-1 font-mono text-[10px] text-white/40 hover:text-white/60 hover:border-white/20 transition-all"
+          className="ml-auto flex items-center gap-1.5 rounded-md border border-white/10 px-2.5 py-1 text-[10px] text-white/40 hover:text-white/60 hover:border-white/20 transition-all"
         >
           <RefreshCw className={'h-3 w-3 ' + (loading ? 'animate-spin' : '')} />
           Refresh
@@ -64,10 +64,10 @@ export default function SystemView() {
             className={'glass-card p-4 flex items-center gap-3 border ' + statusColor(health.supabaseStatus)}
           >
             <div className={'h-3 w-3 rounded-full ' + (health.supabaseStatus === 'healthy' ? 'bg-neon animate-pulse' : 'bg-gold')} />
-            <span className="font-mono text-sm font-medium">
+            <span className="text-sm font-medium">
               {health.supabaseStatus === 'healthy' ? 'All Systems Operational' : 'Performance Degraded'}
             </span>
-            <span className="font-mono text-[10px] text-white/30 ml-auto">
+            <span className="text-[10px] text-white/30 ml-auto">
               Last check: {lastRefresh.toLocaleTimeString()}
             </span>
           </motion.div>
@@ -92,7 +92,7 @@ export default function SystemView() {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <item.icon className={'h-3.5 w-3.5 ' + (item.accent === 'neon' ? 'text-neon/50' : 'text-gold/50')} />
-                  <span className="font-mono text-[10px] text-white/40">{item.label}</span>
+                  <span className="text-[10px] text-white/40">{item.label}</span>
                 </div>
                 <span className={'font-mono text-xl font-bold ' + (item.accent === 'neon' ? 'text-neon/80' : 'text-gold/80')}>
                   {item.value}
@@ -108,7 +108,7 @@ export default function SystemView() {
             transition={{ delay: 0.3 }}
             className="glass-card p-5"
           >
-            <h3 className="font-mono text-sm font-medium text-white/70 mb-3">Agent Fleet</h3>
+            <h3 className="text-sm font-medium text-white/70 mb-3">Agent Fleet</h3>
             <div className="space-y-3">
               {[
                 { name: 'Titus \u26a1', role: 'Operations Operator', model: 'claude-opus-4-6', color: 'agent-titus' },
@@ -118,10 +118,10 @@ export default function SystemView() {
                 <div key={a.name} className="flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.02] px-4 py-3">
                   <div className={'h-2 w-2 rounded-full bg-' + a.color} />
                   <div className="flex-1">
-                    <span className={'font-mono text-xs font-medium text-' + a.color}>{a.name}</span>
-                    <span className="font-mono text-[10px] text-white/30 ml-2">{a.role}</span>
+                    <span className={'text-xs font-medium text-' + a.color}>{a.name}</span>
+                    <span className="text-[10px] text-white/30 ml-2">{a.role}</span>
                   </div>
-                  <span className="font-mono text-[9px] text-white/20">{a.model}</span>
+                  <span className="text-[9px] text-white/20">{a.model}</span>
                 </div>
               ))}
             </div>

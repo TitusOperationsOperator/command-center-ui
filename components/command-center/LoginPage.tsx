@@ -48,8 +48,8 @@ export default function LoginPage() {
           >
             <Zap className="h-8 w-8 text-neon" />
           </motion.div>
-          <h1 className="font-mono text-lg font-bold text-white/90">Command Center</h1>
-          <p className="font-mono text-[11px] text-white/30 mt-1">Authentication required</p>
+          <h1 className="text-lg font-bold text-white/90">Command Center</h1>
+          <p className="text-[11px] text-white/30 mt-1">Authentication required</p>
         </div>
 
         {/* Login Form */}
@@ -62,12 +62,12 @@ export default function LoginPage() {
                 className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3 py-2"
               >
                 <AlertCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
-                <span className="font-mono text-[10px] text-red-300">{error}</span>
+                <span className="text-[10px] text-red-300">{error}</span>
               </motion.div>
             )}
 
             <div>
-              <label className="font-mono text-[10px] text-white/30 uppercase tracking-wider mb-1.5 block">Email</label>
+              <label className="text-[10px] text-white/30 uppercase tracking-wider mb-1.5 block">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
                 <input
@@ -76,13 +76,13 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="cody@eidrix.ai"
                   required
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] pl-9 pr-3 py-2.5 font-mono text-xs text-white/80 placeholder:text-white/15 outline-none focus:border-neon/30 focus:bg-neon/[0.02] transition-all"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] pl-9 pr-3 py-2.5 text-xs text-white/80 placeholder:text-white/15 outline-none focus:border-neon/30 focus:bg-neon/[0.02] transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="font-mono text-[10px] text-white/30 uppercase tracking-wider mb-1.5 block">Password</label>
+              <label className="text-[10px] text-white/30 uppercase tracking-wider mb-1.5 block">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
                 <input
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
                   required
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] pl-9 pr-10 py-2.5 font-mono text-xs text-white/80 placeholder:text-white/15 outline-none focus:border-neon/30 focus:bg-neon/[0.02] transition-all"
+                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] pl-9 pr-10 py-2.5 text-xs text-white/80 placeholder:text-white/15 outline-none focus:border-neon/30 focus:bg-neon/[0.02] transition-all"
                 />
                 <button
                   type="button"
@@ -107,7 +107,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-neon/[0.12] border border-neon/30 py-2.5 font-mono text-xs font-medium text-neon hover:bg-neon/[0.18] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-lg bg-neon/[0.12] border border-neon/30 py-2.5 text-xs font-medium text-neon hover:bg-neon/[0.18] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -118,7 +118,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center font-mono text-[9px] text-white/15 mt-6">Eidrix Command Center v0.1</p>
+        <p className="text-center text-[9px] text-white/15 mt-6">Eidrix Command Center v0.1</p>
       </motion.div>
     </div>
   );

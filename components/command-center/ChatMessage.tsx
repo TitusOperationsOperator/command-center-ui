@@ -56,12 +56,12 @@ export default function ChatMessage({
         )}
       >
         <div className="flex items-center gap-2 mb-0.5">
-          <span className={'font-mono text-[10px] font-medium ' + (isUser ? 'text-neon/70' : 'text-white/50')}>
+          <span className={'text-[10px] font-medium ' + (isUser ? 'text-neon/70' : 'text-white/50')}>
             {agentName}
           </span>
-          <span className="font-mono text-[9px] text-white/20">{timestamp}</span>
+          <span className="text-[9px] text-white/20">{timestamp}</span>
         </div>
-        <div className="font-mono text-[11px] text-white/80 whitespace-pre-wrap break-words leading-relaxed">
+        <div className="text-[11px] text-white/80 whitespace-pre-wrap break-words leading-relaxed">
           {renderContent(content)}
         </div>
       </div>

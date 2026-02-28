@@ -52,7 +52,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 80, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className={'flex items-center gap-2.5 rounded-lg border px-3 py-2.5 backdrop-blur-xl shadow-lg font-mono text-[11px] ' + colors[t.type]}
+                className={'flex items-center gap-2.5 rounded-lg border px-3 py-2.5 backdrop-blur-xl shadow-lg text-[11px] ' + colors[t.type]}
               >
                 <Icon className="h-3.5 w-3.5 flex-shrink-0" />
                 <span className="flex-1">{t.message}</span>

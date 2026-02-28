@@ -63,12 +63,12 @@ export default function CommandBar() {
       >
         <Search className="h-3 w-3 text-white/20" />
         <span className={"h-1.5 w-1.5 rounded-full " + (dbConnected ? "bg-emerald-400" : "bg-red-400 animate-pulse")} />
-        <span className="font-mono text-[11px] text-white/20">Search memories, files, commands...</span>
+        <span className="text-[11px] text-white/20">Search memories, files, commands...</span>
         <div className="ml-auto flex items-center gap-3">
           <NotificationBell />
           <div className="flex items-center gap-0.5 rounded border border-white/[0.08] px-1.5 py-0.5">
           <Command className="h-2.5 w-2.5 text-white/20" />
-          <span className="font-mono text-[9px] text-white/20">K</span>
+          <span className="text-[9px] text-white/20">K</span>
           </div>
         </div>
       </button>
@@ -86,16 +86,16 @@ export default function CommandBar() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}
           placeholder="Search memories, files, commands..."
-          className="flex-1 bg-transparent font-mono text-xs text-white/80 placeholder:text-white/20 outline-none"
+          className="flex-1 bg-transparent text-xs text-white/80 placeholder:text-white/20 outline-none"
         />
-        <button onClick={() => setOpen(false)} className="font-mono text-[9px] text-white/30 border border-white/10 rounded px-1.5 py-0.5 hover:text-white/50">ESC</button>
+        <button onClick={() => setOpen(false)} className="text-[9px] text-white/30 border border-white/10 rounded px-1.5 py-0.5 hover:text-white/50">ESC</button>
       </div>
       {results.length > 0 && (
         <div className="border-t border-white/[0.04] max-h-[200px] overflow-y-auto">
           {results.map((r: any) => (
             <div key={r.id} className="flex items-center gap-3 px-4 py-2 hover:bg-white/[0.03] cursor-pointer">
-              <span className="font-mono text-[10px] text-neon/50 border border-neon/20 rounded px-1.5 py-0.5">{r.category}</span>
-              <span className="font-mono text-xs text-white/70">{r.title}</span>
+              <span className="text-[10px] text-neon/50 border border-neon/20 rounded px-1.5 py-0.5">{r.category}</span>
+              <span className="text-xs text-white/70">{r.title}</span>
             </div>
           ))}
         </div>

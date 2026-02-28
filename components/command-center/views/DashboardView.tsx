@@ -230,7 +230,7 @@ export default function DashboardView() {
         <div>
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-semibold text-white/90">Command Center</h2>
-            <span className="font-mono text-[9px] text-white/20">
+            <span className="text-[9px] text-white/20">
               Last refreshed: {secondsSinceRefresh}s ago
             </span>
           </div>

@@ -46,8 +46,8 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
     <div className="p-4 sm:p-6 lg:p-8 space-y-4">
       <div className="flex items-center gap-2">
         <Brain className="h-5 w-5 text-neon/60" />
-        <h2 className="font-mono text-lg font-medium text-white/80">Agent Memory</h2>
-        <span className="font-mono text-xs text-white/30 ml-2">{memories.length} memories</span>
+        <h2 className="text-lg font-medium text-white/80">Agent Memory</h2>
+        <span className="text-xs text-white/30 ml-2">{memories.length} memories</span>
       </div>
 
       <div className="flex gap-2 flex-wrap">
@@ -58,7 +58,7 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search memories..."
-            className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 font-mono text-xs text-white/80 placeholder:text-white/20 outline-none focus:border-neon/30"
+            className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 text-xs text-white/80 placeholder:text-white/20 outline-none focus:border-neon/30"
           />
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
       <div className="flex gap-1.5 flex-wrap">
         <button
           onClick={() => setSelectedCategory(null)}
-          className={"px-2.5 py-1 rounded-full font-mono text-[10px] border transition-all " + (
+          className={"px-2.5 py-1 rounded-full text-[10px] border transition-all " + (
             !selectedCategory ? 'border-neon/40 text-neon bg-neon/10' : 'border-white/10 text-white/40 hover:border-white/20'
           )}
         >
@@ -77,7 +77,7 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
           <button
             key={cat}
             onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-            className={"px-2.5 py-1 rounded-full font-mono text-[10px] border transition-all " + (
+            className={"px-2.5 py-1 rounded-full text-[10px] border transition-all " + (
               selectedCategory === cat ? 'border-neon/40 text-neon bg-neon/10' : 'border-white/10 text-white/40 hover:border-white/20'
             )}
           >
@@ -93,7 +93,7 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-neon/30 border-t-neon" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center font-mono text-xs text-white/30 py-16">
+          <div className="text-center text-xs text-white/30 py-16">
             {search ? 'No matching memories' : 'No memories stored yet'}
           </div>
         ) : (
@@ -133,15 +133,15 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-[10px] text-neon/50 border border-neon/20 rounded-full px-2 py-0.5">
+                    <span className="text-[10px] text-neon/50 border border-neon/20 rounded-full px-2 py-0.5">
                       {mem.category}{mem.subcategory ? '/' + mem.subcategory : ''}
                     </span>
-                    <span className="font-mono text-[9px] text-white/20 ml-auto">
+                    <span className="text-[9px] text-white/20 ml-auto">
                       {relativeTime(mem.created_at)}
                     </span>
                   </div>
-                  <h4 className="font-mono text-xs text-white/80 font-medium">{mem.title}</h4>
-                  <p className="font-mono text-[10px] text-white/40 mt-1 line-clamp-2">
+                  <h4 className="text-xs text-white/80 font-medium">{mem.title}</h4>
+                  <p className="text-[10px] text-white/40 mt-1 line-clamp-2">
                     {(mem.content || '').substring(0, 200)}
                   </p>
                 </div>

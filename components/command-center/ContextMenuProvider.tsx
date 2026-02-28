@@ -72,7 +72,7 @@ export default function ContextMenuProvider({ children }: { children: React.Reac
                   onClick={() => { item.action(); setMenu(null); }}
                   disabled={item.disabled}
                   className={[
-                    'w-full flex items-center gap-2.5 px-3 py-1.5 text-left font-mono text-[11px] transition-all rounded-md mx-0.5',
+                    'w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-[11px] transition-all rounded-md mx-0.5',
                     item.danger
                       ? 'text-red-400/80 hover:bg-red-500/[0.12] hover:text-red-300'
                       : 'text-white/60 hover:bg-white/[0.06] hover:text-white/90',

@@ -16,8 +16,8 @@ export default function TypingIndicator({ agentName, color }: TypingIndicatorPro
       className="flex items-center gap-2 px-3 py-2"
     >
       <div className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] px-3 py-2">
-        <span className="font-mono text-[10px]" style={{ color: color + '80' }}>{agentName}</span>
-        <span className="font-mono text-[10px] text-white/30">is thinking</span>
+        <span className="text-[10px]" style={{ color: color + '80' }}>{agentName}</span>
+        <span className="text-[10px] text-white/30">is thinking</span>
         <div className="flex gap-0.5 ml-1">
           <motion.div
             animate={{ opacity: [0.3, 1, 0.3] }}
