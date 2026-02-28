@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, DollarSign, Zap, Clock, Cpu, Activity } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useContextMenu } from '../ContextMenuProvider';
+import { useToast } from '../Toast';
 
 const AGENTS: Record<string, any> = {
   titus: {
@@ -52,6 +54,8 @@ interface Props { agentId: string; }
 export default function AgentDetailView({ agentId }: Props) {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
 
   const agent = AGENTS[agentId] || AGENTS.titus;
   const Icon = agent.icon;

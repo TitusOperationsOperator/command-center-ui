@@ -18,6 +18,8 @@ import {
 } from 'recharts';
 import { DollarSign, TrendingUp, ArrowDownRight, Cpu, RefreshCw, Calendar, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useContextMenu } from '../ContextMenuProvider';
+import { useToast } from '../Toast';
 
 interface UsageRow {
   id: string;
@@ -91,6 +93,8 @@ function ChartTooltip({ active, payload, label }: any) {
 export default function FinOpsView() {
   const [data, setData] = useState<UsageRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
   const [filter, setFilter] = useState<TimeFilter>('7d');
   const [refreshing, setRefreshing] = useState(false);
   const [historicalCost, setHistoricalCost] = useState(0);

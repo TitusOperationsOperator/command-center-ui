@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, File, Trash2, Download, FolderOpen } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useContextMenu } from '../ContextMenuProvider';
+import { useToast } from '../Toast';
 
 interface FileRecord {
   id: string;
@@ -27,6 +29,8 @@ export default function FilesView() {
   const [files, setFiles] = useState<FileRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
   const [dragOver, setDragOver] = useState(false);
 
   const fetchFiles = useCallback(async () => {

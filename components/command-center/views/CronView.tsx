@@ -1,3 +1,5 @@
+import { useContextMenu } from '../ContextMenuProvider';
+import { useToast } from '../Toast';
 'use client';
 
 import { motion } from 'framer-motion';
