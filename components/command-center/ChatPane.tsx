@@ -326,6 +326,15 @@ export default function ChatPane({
     }
   }
 
+  async function clearChat() {
+    if (!activeThreadId) return;
+    if (!window.confirm('Delete all messages in this thread? This cannot be undone.')) return;
+    const { error } = await supabase.from('chat_messages').delete().eq('thread_id', activeThreadId);
+    if (!error) {
+      setMessages([]);
+    }
+  }
+
   async function handleSend(e?: React.FormEvent) {
     e?.preventDefault();
     if ((!input.trim() && attachments.length === 0) || !activeThreadId || sending) return;
@@ -537,8 +546,18 @@ export default function ChatPane({
         )}
       </div>
 
-      {/* Messages */}
-      <div className="relative flex-1 overflow-hidden">
+            {/* Messages */}
+      <div className="relative flex-1 overflow-hidden flex flex-col">
+        {/* Chat header */}
+        {activeThreadId && uniqueMessages.length > 0 && (
+          <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-2">
+            <span className="text-xs text-white/40">{uniqueMessages.length} message{uniqueMessages.length !== 1 ? 's' : ''}</span>
+            <button onClick={clearChat} className="flex h-6 items-center gap-1.5 rounded-md px-2 text-white/30 transition-colors hover:bg-red-500/10 hover:text-red-400" title="Clear all messages">
+              <Trash2 className="h-3 w-3" />
+              <span className="text-[10px]">Clear</span>
+            </button>
+          </div>
+        )}
         <div ref={scrollRef} className="h-full overflow-y-auto scrollbar-thin p-3 space-y-3">
           {loadingMessages ? (
             <div className="flex h-full items-center justify-center">
@@ -683,5 +702,8 @@ export default function ChatPane({
     </div>
   );
 }
+
+
+
 
 
