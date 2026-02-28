@@ -1,11 +1,14 @@
 'use client';
 
+import { useAuth } from '@/lib/auth';
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, Shield, Wifi, Database, Bell, Moon, Sun } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export default function SettingsView() {
+  const { user, signOut } = useAuth();
   const [health, setHealth] = useState<any>(null);
   const [theme, setTheme] = useState('dark');
   const [notifications, setNotifications] = useState(true);
@@ -105,6 +108,22 @@ export default function SettingsView() {
           </div>
         </div>
       </motion.div>
+        {/* Account */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card p-5 space-y-3">
+          <h3 className="font-mono text-xs font-medium text-white/50">Account</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-mono text-xs text-white/70">{user?.email || "Not signed in"}</p>
+              <p className="font-mono text-[10px] text-white/30">{user?.user_metadata?.name || "User"} • {user?.id?.slice(0, 8)}</p>
+            </div>
+            <button
+              onClick={() => signOut()}
+              className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3 py-1.5 font-mono text-[10px] text-red-400 hover:bg-red-500/[0.12] transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </motion.div>
     </div>
   );
 }
