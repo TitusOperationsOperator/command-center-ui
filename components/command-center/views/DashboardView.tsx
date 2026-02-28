@@ -473,14 +473,26 @@ export default function DashboardView() {
             <h3 className="text-sm font-medium text-white/80 mb-3">Quick Actions</h3>
             <div className="space-y-2">
               {[
-                { label: 'Check Email', emoji: '📧', action: '/check email' },
+                { label: 'Check Email', emoji: '📧', action: '/email' },
                 { label: 'Run Research', emoji: '🔍', action: '/research' },
-                { label: 'Sync Usage Data', emoji: '📊', action: '/sync usage' },
                 { label: 'Status Report', emoji: '📋', action: '/status' },
+                { label: 'Memory Search', emoji: '🧠', action: '/memory' },
               ].map((qa) => (
                 <button
                   key={qa.label}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-xs text-white/40 hover:text-white/70 hover:bg-white/[0.03] transition group"
+                  onClick={async () => {
+                    // Send command to the titus chat thread
+                    const { data: threads } = await supabase.from('chat_threads').select('id').eq('agent_id', 'titus').limit(1);
+                    if (threads && threads[0]) {
+                      await supabase.from('chat_messages').insert({
+                        thread_id: threads[0].id,
+                        sender: 'user',
+                        content: qa.action,
+                        metadata: { source: 'quick-action' },
+                      });
+                    }
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-xs text-white/40 hover:text-white/70 hover:bg-white/[0.03] transition group active:scale-[0.98]"
                 >
                   <span>{qa.emoji}</span>
                   <span className="flex-1">{qa.label}</span>
