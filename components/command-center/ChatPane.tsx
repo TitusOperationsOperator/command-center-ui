@@ -15,7 +15,10 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { sendChatMessage } from '@/lib/api';
+import { matchCommands } from '@/lib/commands';
 import ChatMessage from './ChatMessage';
+import TypingIndicator from './TypingIndicator';
+import SlashHints from './SlashHints';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,20 +47,28 @@ export default function ChatPane({
   const [loadingThreads, setLoadingThreads] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sending, setSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [slashIndex, setSlashIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const agent = AGENT_CONFIG[activeAgent];
+  const slashMatches = matchCommands(input);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      }, 50);
     }
   }, []);
 
+  // Fetch threads
   const fetchThreads = useCallback(async () => {
     const { data } = await supabase
       .from('chat_threads')
@@ -80,6 +91,7 @@ export default function ChatPane({
     fetchThreads();
   }, [activeAgent]);
 
+  // Fetch messages
   const fetchMessages = useCallback(async () => {
     if (!activeThreadId) {
       setMessages([]);
@@ -94,19 +106,19 @@ export default function ChatPane({
 
     if (data) setMessages(data);
     setLoadingMessages(false);
-    setTimeout(scrollToBottom, 100);
+    scrollToBottom();
   }, [activeThreadId, scrollToBottom]);
 
   useEffect(() => {
     fetchMessages();
   }, [activeThreadId]);
 
-  // Real-time subscription for new messages
+  // REAL-TIME: Subscribe to new messages in active thread
   useEffect(() => {
     if (!activeThreadId) return;
 
     const channel = supabase
-      .channel('chat-' + activeThreadId)
+      .channel('chat-realtime-' + activeThreadId)
       .on(
         'postgres_changes',
         {
@@ -116,20 +128,46 @@ export default function ChatPane({
           filter: 'thread_id=eq.' + activeThreadId,
         },
         (payload) => {
+          const newMsg = payload.new as ChatMsg;
           setMessages((prev) => {
-            // Avoid duplicates
-            if (prev.find((m) => m.id === payload.new.id)) return prev;
-            return [...prev, payload.new as ChatMsg];
+            // Deduplicate
+            if (prev.find((m) => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
           });
-          setTimeout(scrollToBottom, 100);
+          // If it's from an agent, stop typing indicator
+          const sender = (newMsg.agent_name || '').toLowerCase();
+          if (sender !== 'user' && sender !== 'cody') {
+            setIsTyping(false);
+          }
+          scrollToBottom();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[ChatPane] Realtime status:', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [activeThreadId, scrollToBottom]);
+
+  // Also poll every 5s as backup for realtime
+  useEffect(() => {
+    if (!activeThreadId) return;
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('thread_id', activeThreadId)
+        .order('created_at', { ascending: true });
+      if (data && data.length !== messages.length) {
+        setMessages(data);
+        setIsTyping(false);
+        scrollToBottom();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeThreadId, messages.length, scrollToBottom]);
 
   useEffect(() => {
     scrollToBottom();
@@ -141,6 +179,11 @@ export default function ChatPane({
       renameInputRef.current.select();
     }
   }, [renamingId]);
+
+  // Reset slash index when input changes
+  useEffect(() => {
+    setSlashIndex(0);
+  }, [input]);
 
   async function createThread() {
     const { data } = await supabase
@@ -212,18 +255,41 @@ export default function ChatPane({
     e.preventDefault();
     if (!input.trim() || !activeThreadId || sending) return;
 
+    // Handle slash command selection
+    if (slashMatches.length > 0 && input.startsWith('/') && !input.includes(' ')) {
+      setInput(slashMatches[slashIndex].name + ' ');
+      return;
+    }
+
     const msg = input.trim();
     setInput('');
     setSending(true);
+    setIsTyping(true);
 
     try {
       await sendChatMessage(activeThreadId, msg, 'Cody');
     } catch (err) {
       console.error('Send failed:', err);
-      setInput(msg); // Restore on failure
+      setInput(msg);
+      setIsTyping(false);
     } finally {
       setSending(false);
       inputRef.current?.focus();
+    }
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (slashMatches.length > 0) {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSlashIndex((prev) => Math.max(0, prev - 1));
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSlashIndex((prev) => Math.min(slashMatches.length - 1, prev + 1));
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        setInput(slashMatches[slashIndex].name + ' ');
+      }
     }
   }
 
@@ -241,13 +307,11 @@ export default function ChatPane({
 
         if (!error) {
           const { data: urlData } = supabase.storage.from('uploads').getPublicUrl(storagePath);
-          // Send as a message with file attachment
           await sendChatMessage(
             activeThreadId!,
             '[File: ' + file.name + '](' + urlData.publicUrl + ') (' + formatBytes(file.size) + ')',
             'Cody'
           );
-          // Also track in file_uploads
           await supabase.from('file_uploads').insert({
             filename: file.name,
             storage_path: storagePath,
@@ -484,6 +548,9 @@ export default function ChatPane({
               <span className="font-mono text-[11px] text-white/20">
                 Send a message to {agent.name}
               </span>
+              <span className="font-mono text-[9px] text-white/15">
+                Type / to see available commands
+              </span>
             </div>
           ) : (
             messages.map((msg, i) => (
@@ -496,55 +563,75 @@ export default function ChatPane({
               />
             ))
           )}
+
+          {/* Typing indicator */}
+          <AnimatePresence>
+            {isTyping && (
+              <TypingIndicator agentName={agent.name} color={agent.color} />
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Input */}
-      <form
-        onSubmit={handleSend}
-        className="flex items-center gap-2 border-t border-white/[0.06] bg-space-card/30 px-3 py-2 backdrop-blur-xl"
-      >
-        <button
-          type="button"
-          onClick={handleFileUpload}
-          className="flex h-6 w-6 items-center justify-center rounded-md text-white/20 hover:text-white/40 hover:bg-white/[0.05] transition-colors"
-        >
-          <Paperclip className="h-3.5 w-3.5" />
-        </button>
-        <div
-          className="font-mono text-[10px] select-none"
-          style={{ color: agent.color + '40' }}
-        >
-          &gt;_
-        </div>
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={'Message ' + agent.name + '...'}
-          className="flex-1 bg-transparent font-mono text-xs text-white/80 placeholder:text-white/15 outline-none"
-          disabled={sending}
-        />
-        <motion.button
-          type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          disabled={!input.trim() || sending}
-          className="flex h-6 w-6 items-center justify-center rounded-md border transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
-          style={{
-            borderColor: agent.color + '30',
-            backgroundColor: agent.color + '10',
-            color: agent.color + '90',
-          }}
-        >
-          {sending ? (
-            <div className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: agent.color + '60' }} />
-          ) : (
-            <Send className="h-3 w-3" />
+      {/* Input with slash hints */}
+      <div className="relative">
+        <AnimatePresence>
+          {slashMatches.length > 0 && (
+            <SlashHints
+              commands={slashMatches}
+              onSelect={(cmd) => setInput(cmd)}
+              selectedIndex={slashIndex}
+            />
           )}
-        </motion.button>
-      </form>
+        </AnimatePresence>
+
+        <form
+          onSubmit={handleSend}
+          className="flex items-center gap-2 border-t border-white/[0.06] bg-space-card/30 px-3 py-2 backdrop-blur-xl"
+        >
+          <button
+            type="button"
+            onClick={handleFileUpload}
+            className="flex h-6 w-6 items-center justify-center rounded-md text-white/20 hover:text-white/40 hover:bg-white/[0.05] transition-colors"
+          >
+            <Paperclip className="h-3.5 w-3.5" />
+          </button>
+          <div
+            className="font-mono text-[10px] select-none"
+            style={{ color: agent.color + '40' }}
+          >
+            &gt;_
+          </div>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={'Message ' + agent.name + '... (type / for commands)'}
+            className="flex-1 bg-transparent font-mono text-xs text-white/80 placeholder:text-white/15 outline-none"
+            disabled={sending}
+          />
+          <motion.button
+            type="submit"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={!input.trim() || sending}
+            className="flex h-6 w-6 items-center justify-center rounded-md border transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+            style={{
+              borderColor: agent.color + '30',
+              backgroundColor: agent.color + '10',
+              color: agent.color + '90',
+            }}
+          >
+            {sending ? (
+              <div className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: agent.color + '60' }} />
+            ) : (
+              <Send className="h-3 w-3" />
+            )}
+          </motion.button>
+        </form>
+      </div>
     </div>
   );
 }
