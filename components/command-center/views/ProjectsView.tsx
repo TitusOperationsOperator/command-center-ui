@@ -5,6 +5,7 @@ import { Folder, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { useProjects, useTasks } from '@/lib/hooks';
 
 const statusIcon: Record<string, any> = {
+  done: CheckCircle2,
   active: Clock,
   completed: CheckCircle2,
   todo: AlertCircle,
@@ -12,6 +13,7 @@ const statusIcon: Record<string, any> = {
 };
 
 const statusColor: Record<string, string> = {
+  done: 'text-green-400 border-green-400/30 bg-green-400/10',
   active: 'text-neon border-neon/30 bg-neon/10',
   completed: 'text-green-400 border-green-400/30 bg-green-400/10',
   todo: 'text-white/40 border-white/10 bg-white/5',
@@ -40,7 +42,7 @@ export default function ProjectsView() {
 
       {projects.map((project: any, pi: number) => {
         const projectTasks = tasks.filter((t: any) => t.project_id === project.id);
-        const completed = projectTasks.filter((t: any) => t.status === 'completed').length;
+        const completed = projectTasks.filter((t: any) => (t.status === 'completed' || t.status === 'done')).length;
         const total = projectTasks.length;
 
         return (
