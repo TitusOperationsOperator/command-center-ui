@@ -38,6 +38,7 @@ export const AGENT_CONFIG: Record<
     borderColor: string;
     bgColor: string;
     status: 'online' | 'working';
+    agentKey: string; // maps to api_usage.agent
   }
 > = {
   titus: {
@@ -48,6 +49,7 @@ export const AGENT_CONFIG: Record<
     borderColor: 'border-agent-titus/40',
     bgColor: 'bg-agent-titus/10',
     status: 'online',
+    agentKey: 'titus',
   },
   looty: {
     name: 'Looty',
@@ -57,6 +59,7 @@ export const AGENT_CONFIG: Record<
     borderColor: 'border-agent-looty/40',
     bgColor: 'bg-agent-looty/10',
     status: 'working',
+    agentKey: 'looty',
   },
   bolt: {
     name: 'Mini Bolt',
@@ -66,6 +69,7 @@ export const AGENT_CONFIG: Record<
     borderColor: 'border-agent-bolt/40',
     bgColor: 'bg-agent-bolt/10',
     status: 'online',
+    agentKey: 'minibolt',
   },
 };
 

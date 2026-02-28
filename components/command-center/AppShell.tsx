@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server, Shield, Coins, Zap } from 'lucide-react';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -20,10 +20,14 @@ import ProjectsView from './views/ProjectsView';
 import ActivityView from './views/ActivityView';
 import FilesView from './views/FilesView';
 import SystemView from './views/SystemView';
+import AgentDetailView from './AgentDetailView';
 import type { AgentId, TabItem } from './types';
 
 const PINNED_TABS: TabItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, pinned: true },
+  { id: 'agent-titus', label: 'Titus ⚡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
+  { id: 'agent-looty', label: 'Looty 🪙', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
+  { id: 'agent-minibolt', label: 'Mini Bolt 🔩', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
   { id: 'projects', label: 'Projects', icon: Folder, pinned: true },
   { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
@@ -79,6 +83,11 @@ export default function AppShell() {
   const renderMainStage = () => {
     const tab = tabs.find((t) => t.id === activeTabId);
     if (!tab) return <DashboardView />;
+
+    // Agent detail tabs
+    if (tab.type === 'agent' && tab.data?.agentId) {
+      return <AgentDetailView agentId={tab.data.agentId} />;
+    }
 
     switch (tab.id) {
       case 'dashboard':
