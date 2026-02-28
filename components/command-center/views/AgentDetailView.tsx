@@ -44,6 +44,9 @@ const AGENTS: Record<string, any> = {
   },
 };
 
+// Allow both 'bolt' and 'minibolt' as keys
+AGENTS.minibolt = AGENTS.bolt;
+
 interface Props { agentId: string; }
 
 export default function AgentDetailView({ agentId }: Props) {
