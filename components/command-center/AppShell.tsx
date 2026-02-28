@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/resizable';
 import ChromeTabs from './ChromeTabs';
 import ContextMenuProvider from './ContextMenuProvider';
+import CommandPalette from './CommandPalette';
 import ToastProvider from './Toast';
 import CommandBar from './CommandBar';
 import ChatPane from './ChatPane';
@@ -50,6 +51,7 @@ export default function AppShell() {
   const [tabs, setTabs] = useState<TabItem[]>(PINNED_TABS);
   const [activeTabId, setActiveTabId] = useState('dashboard');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [cmdkOpen, setCmdkOpen] = useState(false);
 
   // Keyboard shortcuts: Alt+1-9 for tabs, Alt+0 for last tab
   useEffect(() => {
@@ -236,6 +238,7 @@ export default function AppShell() {
         onSelectThread={handleSelectThread}
       />
     </div>
+    <CommandPalette open={cmdkOpen} onClose={() => setCmdkOpen(false)} onNavigate={(tab) => { setActiveTabId(tab); setCmdkOpen(false); }} />
     </ContextMenuProvider>
     </ToastProvider>
   );
