@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Folder, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { useProjects, useTasks } from '@/lib/hooks';
+import { useContextMenu } from '../ContextMenuProvider';
+import { supabase } from '@/lib/supabase';
 
 const statusIcon: Record<string, any> = {
   done: CheckCircle2,
@@ -23,6 +26,8 @@ const statusColor: Record<string, string> = {
 export default function ProjectsView() {
   const { data: projects, loading: pLoading } = useProjects();
   const { data: tasks, loading: tLoading } = useTasks();
+  const { show: showCtx } = useContextMenu();
+  const [, forceUpdate] = useState(0);
 
   if (pLoading || tLoading) {
     return (
@@ -52,6 +57,21 @@ export default function ProjectsView() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: pi * 0.08 }}
             className="glass-card p-5"
+            onContextMenu={(e) => {
+              e.preventDefault();
+              showCtx(e.clientX, e.clientY, [
+                { label: "Copy Project Name", icon: "📋", action: () => navigator.clipboard.writeText(project.name) },
+                { label: completed + "/" + total + " tasks done", icon: "📊", action: () => {}, disabled: true },
+                { divider: true, label: "", action: () => {} },
+                { label: "Add Task", icon: "➕", action: async () => {
+                  const title = prompt("Task title:");
+                  if (title) {
+                    await supabase.from("tasks").insert({ project_id: project.id, title, status: "todo", priority: 5 });
+                    window.location.reload();
+                  }
+                }},
+              ]);
+            }}
           >
             <div className="flex items-center gap-3 mb-3">
               <div className={"flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-mono border " + (statusColor[project.status] || statusColor.todo)}>
