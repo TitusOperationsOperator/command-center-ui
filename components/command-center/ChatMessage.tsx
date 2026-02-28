@@ -7,10 +7,10 @@ interface ChatMessageProps {
   content: string;
   timestamp: string;
   index: number;
+  onContextMenu?: (e: React.MouseEvent) => void;
 }
 
 function renderContent(content: string) {
-  // Simple markdown link rendering: [text](url)
   const parts = content.split(/(\[.*?\]\(.*?\))/g);
   return parts.map((part, i) => {
     const linkMatch = part.match(/^\[(.*?)\]\((.*?)\)$/);
@@ -36,6 +36,7 @@ export default function ChatMessage({
   content,
   timestamp,
   index,
+  onContextMenu,
 }: ChatMessageProps) {
   const isUser = agentName === 'User' || agentName === 'Cody';
 
@@ -45,9 +46,10 @@ export default function ChatMessage({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.02, 0.3) }}
       className={'flex gap-2 ' + (isUser ? 'flex-row-reverse' : '')}
+      onContextMenu={onContextMenu}
     >
       <div
-        className={'max-w-[85%] rounded-lg px-3 py-2 ' + (
+        className={'max-w-[85%] rounded-lg px-3 py-2 cursor-context-menu ' + (
           isUser
             ? 'bg-neon/10 border border-neon/20'
             : 'bg-white/[0.04] border border-white/[0.06]'

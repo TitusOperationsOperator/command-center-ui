@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useContextMenu } from '../ContextMenuProvider';
+import { useToast } from '../Toast';
 import {
   AreaChart,
   Area,
@@ -93,6 +94,7 @@ export default function DashboardView() {
   const [refreshing, setRefreshing] = useState(false);
   const [historicalCost, setHistoricalCost] = useState(0);
   const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
 
   // Hardcoded cron jobs from OpenClaw (these come from the gateway, not Supabase)
   const CRON_JOBS = [
@@ -164,6 +166,11 @@ export default function DashboardView() {
 
   // Agent activity (from recent usage)
   const agentLastSeen: Record<string, string> = {};
+  const isOnline = (agentId: string): boolean => {
+    const last = agentLastSeen[agentId];
+    if (!last) return false;
+    return Date.now() - new Date(last).getTime() < 3600000; // 1 hour
+  };
   for (const u of usage) {
     if (!agentLastSeen[u.agent]) agentLastSeen[u.agent] = u.ts;
   }
@@ -413,12 +420,14 @@ export default function DashboardView() {
                         { label: isDone ? "Reopen Task" : "Mark Complete", icon: isDone ? "🔄" : "✅", action: async () => {
                           await supabase.from("tasks").update({ status: isDone ? "todo" : "done", completed_at: isDone ? null : new Date().toISOString() }).eq("id", task.id);
                           fetchAll();
+                          toast(isDone ? "Task reopened" : "Task completed ✓");
                         }},
-                        { label: "Copy Title", icon: "📋", action: () => navigator.clipboard.writeText(task.title) },
+                        { label: "Copy Title", icon: "📋", action: () => { navigator.clipboard.writeText(task.title); toast("Copied to clipboard"); } },
                         { divider: true, label: "", action: () => {} },
                         { label: "Delete Task", icon: "🗑️", action: async () => {
                           await supabase.from("tasks").delete().eq("id", task.id);
                           fetchAll();
+                          toast("Task deleted", "error");
                         }, danger: true },
                       ]);
                     }}

@@ -21,6 +21,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useContextMenu } from './ContextMenuProvider';
 import { sendChatMessage } from '@/lib/api';
 import { matchCommands } from '@/lib/commands';
 import ChatMessage from './ChatMessage';

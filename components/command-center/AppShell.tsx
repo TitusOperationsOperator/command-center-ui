@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/resizable';
 import ChromeTabs from './ChromeTabs';
 import ContextMenuProvider from './ContextMenuProvider';
+import ToastProvider from './Toast';
 import CommandBar from './CommandBar';
 import ChatPane from './ChatPane';
 import MobileChatSheet from './MobileChatSheet';
@@ -149,6 +150,7 @@ export default function AppShell() {
   };
 
   return (
+    <ToastProvider>
     <ContextMenuProvider>
     <div className="flex h-screen w-full flex-col overflow-hidden bg-space">
       <div className="absolute inset-0 bg-gradient-radial from-neon/[0.015] via-transparent to-transparent pointer-events-none" />
@@ -235,5 +237,6 @@ export default function AppShell() {
       />
     </div>
     </ContextMenuProvider>
+    </ToastProvider>
   );
 }
