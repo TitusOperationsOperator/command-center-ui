@@ -13,7 +13,7 @@ interface MemoryViewProps {
 
 export default function MemoryView({ onOpenFile }: MemoryViewProps) {
   const { data: memories, loading } = useMemories(100);
-  const { show } = useContextMenu();
+  const { show: showCtx } = useContextMenu();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -104,7 +104,17 @@ export default function MemoryView({ onOpenFile }: MemoryViewProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               className="glass-card p-4 cursor-pointer hover:border-neon/20 transition-all"
-              onClick={() => onOpenFile({
+              onContextMenu={(e: React.MouseEvent) => {
+                e.preventDefault();
+                showCtx(e.clientX, e.clientY, [
+                  { label: "Copy Title", icon: "📋", action: () => navigator.clipboard.writeText(mem.title || "") },
+                  { label: "Copy Content", icon: "📝", action: () => navigator.clipboard.writeText(mem.content || "") },
+                  { label: "Filter: " + (mem.category || "none"), icon: "🔍", action: () => setSelectedCategory(mem.category) },
+                  { divider: true, label: "", action: () => {} },
+                  { label: "Importance: " + (mem.importance || "?"), icon: "⭐", action: () => {}, disabled: true },
+                ]);
+              }}
+                            onClick={() => onOpenFile({
                 id: 'mem-' + mem.id,
                 label: mem.title || 'Memory',
                 icon: Brain,
