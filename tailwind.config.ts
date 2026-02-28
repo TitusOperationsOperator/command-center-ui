@@ -10,28 +10,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Burnt orange — primary system accent
         neon: {
-          DEFAULT: '#00ff41',
-          dim: '#00cc34',
-          glow: 'rgba(0, 255, 65, 0.15)',
-          border: 'rgba(0, 255, 65, 0.25)',
+          DEFAULT: '#e8721a',
+          dim: '#c45f14',
+          glow: 'rgba(232, 114, 26, 0.15)',
+          border: 'rgba(232, 114, 26, 0.25)',
         },
+        // Gold stays for warnings/highlights
         gold: {
           DEFAULT: '#ffd700',
           dim: '#ccac00',
           glow: 'rgba(255, 215, 0, 0.15)',
           border: 'rgba(255, 215, 0, 0.25)',
         },
+        // Burnt orange variants for direct use
+        orange: {
+          DEFAULT: '#e8721a',
+          light: '#f09030',
+          dim: '#c45f14',
+          dark: '#a04d10',
+          glow: 'rgba(232, 114, 26, 0.15)',
+          border: 'rgba(232, 114, 26, 0.30)',
+        },
         space: {
-          DEFAULT: '#0a0a0a',
-          light: '#141414',
-          card: '#111111',
-          hover: '#1a1a1a',
+          DEFAULT: '#0a0c14',
+          light: '#12151f',
+          card: '#0e1018',
+          hover: '#181c28',
         },
         agent: {
           titus: '#3b82f6',
           looty: '#ffd700',
-          bolt: '#00ff41',
+          bolt: '#22c55e',
         },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -93,8 +104,8 @@ const config: Config = {
           to: { height: '0' },
         },
         pulse_glow: {
-          '0%, 100%': { boxShadow: '0 0 8px rgba(0, 255, 65, 0.4)' },
-          '50%': { boxShadow: '0 0 20px rgba(0, 255, 65, 0.8)' },
+          '0%, 100%': { boxShadow: '0 0 8px rgba(232, 114, 26, 0.4)' },
+          '50%': { boxShadow: '0 0 20px rgba(232, 114, 26, 0.8)' },
         },
         pulse_dot: {
           '0%, 100%': { opacity: '1', transform: 'scale(1)' },
@@ -104,6 +115,10 @@ const config: Config = {
           '0%': { transform: 'translateY(-100%)' },
           '100%': { transform: 'translateY(100%)' },
         },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -111,9 +126,11 @@ const config: Config = {
         'pulse-glow': 'pulse_glow 2s ease-in-out infinite',
         'pulse-dot': 'pulse_dot 2s ease-in-out infinite',
         scanline: 'scanline 8s linear infinite',
+        shimmer: 'shimmer 2s ease-in-out infinite',
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

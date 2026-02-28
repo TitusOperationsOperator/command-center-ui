@@ -2,30 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 220 30% 4%;
     --foreground: 0 0% 93%;
-    --card: 0 0% 6%;
+    --card: 220 25% 5%;
     --card-foreground: 0 0% 93%;
-    --popover: 0 0% 6%;
+    --popover: 220 25% 5%;
     --popover-foreground: 0 0% 93%;
-    --primary: 135 100% 50%;
+    --primary: 25 85% 50%;
     --primary-foreground: 0 0% 4%;
-    --secondary: 0 0% 10%;
+    --secondary: 220 15% 10%;
     --secondary-foreground: 0 0% 93%;
-    --muted: 0 0% 10%;
+    --muted: 220 15% 10%;
     --muted-foreground: 0 0% 55%;
-    --accent: 0 0% 12%;
+    --accent: 220 15% 12%;
     --accent-foreground: 0 0% 93%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
-    --ring: 135 100% 50%;
-    --chart-1: 135 100% 50%;
+    --border: 220 15% 14%;
+    --input: 220 15% 14%;
+    --ring: 25 85% 50%;
+    --chart-1: 25 85% 50%;
     --chart-2: 51 100% 50%;
     --chart-3: 217 91% 60%;
     --chart-4: 0 84% 60%;
@@ -40,14 +40,16 @@
   }
   body {
     @apply bg-space text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply relative rounded-lg border border-white/[0.06] bg-white/[0.03] backdrop-blur-xl;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    @apply relative rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+                0 4px 24px -4px rgba(0, 0, 0, 0.3);
   }
 
   .glass-card-hover {
@@ -55,22 +57,23 @@
   }
 
   .glass-card-hover:hover {
-    @apply border-neon-border bg-white/[0.05];
+    @apply border-orange-border bg-white/[0.04];
     box-shadow:
-      0 0 0 1px rgba(0, 255, 65, 0.1) inset,
-      0 0 30px -10px rgba(0, 255, 65, 0.15);
+      0 0 0 1px rgba(232, 114, 26, 0.08) inset,
+      0 0 30px -10px rgba(232, 114, 26, 0.12);
   }
 
   .glass-card-gold:hover {
-    @apply border-gold-border bg-white/[0.05];
+    @apply border-gold-border bg-white/[0.04];
     box-shadow:
-      0 0 0 1px rgba(255, 215, 0, 0.1) inset,
-      0 0 30px -10px rgba(255, 215, 0, 0.15);
+      0 0 0 1px rgba(255, 215, 0, 0.08) inset,
+      0 0 30px -10px rgba(255, 215, 0, 0.12);
   }
 
+  /* Burnt orange accent text */
   .neon-text {
-    color: #00ff41;
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.15);
+    color: #e8721a;
+    text-shadow: 0 0 10px rgba(232, 114, 26, 0.5), 0 0 40px rgba(232, 114, 26, 0.15);
   }
 
   .gold-text {
@@ -78,31 +81,51 @@
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.15);
   }
 
+  /* Agent-specific accent classes */
+  .agent-glow-titus {
+    box-shadow: 0 0 15px -3px rgba(59, 130, 246, 0.3), 0 0 6px -2px rgba(59, 130, 246, 0.2);
+  }
+  .agent-glow-looty {
+    box-shadow: 0 0 15px -3px rgba(255, 215, 0, 0.3), 0 0 6px -2px rgba(255, 215, 0, 0.2);
+  }
+  .agent-glow-bolt {
+    box-shadow: 0 0 15px -3px rgba(34, 197, 94, 0.3), 0 0 6px -2px rgba(34, 197, 94, 0.2);
+  }
+
   .glow-border-neon {
-    box-shadow: 0 0 15px -3px rgba(0, 255, 65, 0.3), 0 0 6px -2px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 15px -3px rgba(232, 114, 26, 0.3), 0 0 6px -2px rgba(232, 114, 26, 0.2);
   }
 
   .glow-border-gold {
     box-shadow: 0 0 15px -3px rgba(255, 215, 0, 0.3), 0 0 6px -2px rgba(255, 215, 0, 0.2);
   }
+
+  /* Status indicators */
+  .status-online { color: #e8721a; }
+  .status-active { color: #22c55e; }
+  .status-idle { color: rgba(255, 255, 255, 0.25); }
 }
 
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 3px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
   }
+
+  /* Font utilities */
+  .font-display { font-family: 'Inter', system-ui, sans-serif; }
+  .font-code { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
 }
