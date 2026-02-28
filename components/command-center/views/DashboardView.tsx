@@ -38,7 +38,7 @@ import {
 const AGENTS = {
   titus: { name: 'Titus', emoji: '⚡', icon: Shield, color: '#3b82f6', role: 'Operations' },
   looty: { name: 'Looty', emoji: '🪙', icon: Coins, color: '#ffd700', role: 'Revenue' },
-  minibolt: { name: 'Mini Bolt', emoji: '🔩', icon: Zap, color: '#00ff41', role: 'Code' },
+  minibolt: { name: 'Mini Bolt', emoji: '🔩', icon: Zap, color: '#22c55e', role: 'Code' },
 };
 
 function ChartTooltip({ active, payload, label }: any) {

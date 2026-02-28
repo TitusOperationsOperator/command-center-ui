@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Command Center',
   description: 'AI Agent Command Center — Eidrix Operations Hub',
   manifest: '/manifest.json',
-  themeColor: '#00ff41',
+  themeColor: '#e8721a',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -26,7 +26,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#00ff41" />
+        <meta name="theme-color" content="#e8721a" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="CmdCenter" />

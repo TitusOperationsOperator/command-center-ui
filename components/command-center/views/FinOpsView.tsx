@@ -42,14 +42,14 @@ const MODEL_COLORS: Record<string, string> = {
   'gpt-4.1': '#fbbf24',
   'gpt-4.1-mini': '#a855f7',
   'gpt-4.1-nano': '#c084fc',
-  'gemini-3.1-pro': '#00ff41',
+  'gemini-3.1-pro': '#22c55e',
   'gemini-3.1-pro-preview': '#34d399',
 };
 
 const AGENT_COLORS: Record<string, string> = {
   titus: '#3b82f6',
   looty: '#ffd700',
-  minibolt: '#00ff41',
+  minibolt: '#22c55e',
 };
 
 type TimeFilter = 'today' | '7d' | '30d' | 'all';
@@ -330,7 +330,7 @@ export default function FinOpsView() {
                   <Tooltip content={<ChartTooltip />} />
                   <YAxis yAxisId="right" orientation="right" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <Bar yAxisId="left" dataKey="cost" name="Cost" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  <Line yAxisId="right" type="monotone" dataKey="calls" name="Calls" stroke="#00ff41" strokeWidth={2} dot={{ fill: '#00ff41', r: 3 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="calls" name="Calls" stroke="#22c55e" strokeWidth={2} dot={{ fill: '#22c55e', r: 3 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>

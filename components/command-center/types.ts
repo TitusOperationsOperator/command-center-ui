@@ -65,7 +65,7 @@ export const AGENT_CONFIG: Record<
     name: 'Mini Bolt',
     subtitle: 'Build Logs',
     icon: Zap,
-    color: '#00ff41',
+    color: '#22c55e',
     borderColor: 'border-agent-bolt/40',
     bgColor: 'bg-agent-bolt/10',
     status: 'online',

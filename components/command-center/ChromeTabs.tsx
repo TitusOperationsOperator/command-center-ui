@@ -62,7 +62,7 @@ export default function ChromeTabs({
               <motion.div
                 layoutId="chrome-tab-indicator"
                 className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-neon/60"
-                style={{ boxShadow: '0 0 8px rgba(0, 255, 65, 0.4)' }}
+                style={{ boxShadow: '0 0 8px rgba(232, 114, 26, 0.4)' }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               />
             )}
