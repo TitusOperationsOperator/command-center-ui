@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Command } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import NotificationBell from './NotificationBell';
 
 export default function CommandBar() {
   const [open, setOpen] = useState(false);
@@ -48,9 +49,12 @@ export default function CommandBar() {
       >
         <Search className="h-3 w-3 text-white/20" />
         <span className="font-mono text-[11px] text-white/20">Search memories, files, commands...</span>
-        <div className="ml-auto flex items-center gap-0.5 rounded border border-white/[0.08] px-1.5 py-0.5">
+        <div className="ml-auto flex items-center gap-3">
+          <NotificationBell />
+          <div className="flex items-center gap-0.5 rounded border border-white/[0.08] px-1.5 py-0.5">
           <Command className="h-2.5 w-2.5 text-white/20" />
           <span className="font-mono text-[9px] text-white/20">K</span>
+          </div>
         </div>
       </button>
     );

@@ -11,6 +11,7 @@ import {
 import ChromeTabs from './ChromeTabs';
 import ContextMenuProvider from './ContextMenuProvider';
 import CommandPalette from './CommandPalette';
+import NotificationBell from './NotificationBell';
 import ToastProvider from './Toast';
 import CommandBar from './CommandBar';
 import ChatPane from './ChatPane';
