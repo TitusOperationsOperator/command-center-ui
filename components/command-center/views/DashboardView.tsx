@@ -205,11 +205,11 @@ export default function DashboardView() {
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass-card p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] uppercase tracking-widest text-white/30">Total Spend</span>
+            <span className="text-[10px] uppercase tracking-widest text-white/30">All-Time Spend</span>
             <TrendingUp className="h-4 w-4 text-gold/60" />
           </div>
           <p className="text-2xl font-bold text-white/90">${totalCost.toFixed(2)}</p>
-          <p className="text-[10px] text-white/25 mt-1">{totalCalls} total calls</p>
+          <p className="text-[10px] text-white/25 mt-1">{totalCalls} tracked calls</p>          {historicalCost > 0 && <p className="text-[9px] text-white/15 mt-0.5">incl. ${historicalCost.toFixed(0)} pre-tracked</p>}
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-4">
