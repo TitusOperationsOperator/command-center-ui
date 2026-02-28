@@ -22,6 +22,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useContextMenu } from '../ContextMenuProvider';
 import {
   AreaChart,
   Area,
@@ -91,6 +92,7 @@ export default function DashboardView() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [historicalCost, setHistoricalCost] = useState(0);
+  const { show: showCtx } = useContextMenu();
 
   // Hardcoded cron jobs from OpenClaw (these come from the gateway, not Supabase)
   const CRON_JOBS = [
@@ -403,7 +405,24 @@ export default function DashboardView() {
               {tasks.slice(0, 8).map((task) => {
                 const isDone = task.status === 'done';
                 return (
-                  <div key={task.id} className="flex items-start gap-2 py-1">
+                  <div key={task.id} className="flex items-start gap-2 py-1 cursor-context-menu"
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      const isDone = task.status === "done";
+                      showCtx(e.clientX, e.clientY, [
+                        { label: isDone ? "Reopen Task" : "Mark Complete", icon: isDone ? "🔄" : "✅", action: async () => {
+                          await supabase.from("tasks").update({ status: isDone ? "todo" : "done", completed_at: isDone ? null : new Date().toISOString() }).eq("id", task.id);
+                          fetchAll();
+                        }},
+                        { label: "Copy Title", icon: "📋", action: () => navigator.clipboard.writeText(task.title) },
+                        { divider: true, label: "", action: () => {} },
+                        { label: "Delete Task", icon: "🗑️", action: async () => {
+                          await supabase.from("tasks").delete().eq("id", task.id);
+                          fetchAll();
+                        }, danger: true },
+                      ]);
+                    }}
+                  >
                     <div className={'mt-0.5 h-3.5 w-3.5 rounded border flex items-center justify-center flex-shrink-0 ' +
                       (isDone ? 'border-neon/40 bg-neon/10' : 'border-white/10')}>
                       {isDone && <CheckCircle2 className="h-2.5 w-2.5 text-neon" />}
@@ -493,6 +512,18 @@ export default function DashboardView() {
                     }
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-xs text-white/40 hover:text-white/70 hover:bg-white/[0.03] transition group active:scale-[0.98]"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    showCtx(e.clientX, e.clientY, [
+                      { label: "Run: " + qa.action, icon: "▶️", action: async () => {
+                        const { data: threads } = await supabase.from("chat_threads").select("id").eq("agent_id", "titus").limit(1);
+                        if (threads && threads[0]) {
+                          await supabase.from("chat_messages").insert({ thread_id: threads[0].id, sender: "user", content: qa.action, metadata: { source: "quick-action" } });
+                        }
+                      }},
+                      { label: "Copy Command", icon: "📋", action: () => navigator.clipboard.writeText(qa.action) },
+                    ]);
+                  }}
                 >
                   <span>{qa.emoji}</span>
                   <span className="flex-1">{qa.label}</span>
