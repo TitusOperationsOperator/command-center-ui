@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
             Authorization: `Bearer ${gatewayToken}`,
           },
           body: JSON.stringify({
-            model: 'anthropic/claude-opus-4-6',
+            model: 'anthropic/claude-sonnet-4-5',
             messages: [{ role: 'user', content: message }],
             stream: false,
           }),
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
               Authorization: `Bearer ${gatewayToken}`,
             },
             body: JSON.stringify({
-              model: 'anthropic/claude-opus-4-6',
+              model: 'anthropic/claude-sonnet-4-5',
               messages: [{ role: 'user', content: message }],
               stream: true,
             }),
