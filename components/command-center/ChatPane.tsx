@@ -21,6 +21,8 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useGatewayStatus, useGatewayChat } from '@/hooks/useGateway';
+import { getGatewayConfig } from '@/lib/gateway';
 import { useContextMenu } from './ContextMenuProvider';
 import { sendChatMessage } from '@/lib/api';
 import { matchCommands } from '@/lib/commands';
@@ -78,6 +80,8 @@ export default function ChatPane({
   const [renameValue, setRenameValue] = useState('');
   const [slashIndex, setSlashIndex] = useState(0);
   const [showTools, setShowTools] = useState(false);
+  const gatewayStatus = useGatewayStatus();
+  const gatewayChat = useGatewayChat(activeAgent);
   const scrollRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -340,7 +344,34 @@ export default function ChatPane({
       if (msg) parts.push(msg);
       if (uploadedFiles.length > 0) parts.push(uploadedFiles.join('\n'));
       const fullMessage = parts.join('\n\n');
-      if (fullMessage) await sendChatMessage(activeThreadId, fullMessage, 'Cody');
+      if (!fullMessage) return;
+
+      // Store user message in Supabase for history
+      await sendChatMessage(activeThreadId, fullMessage, 'Cody');
+
+      // Try gateway for real agent response
+      if (gatewayStatus.connected && getGatewayConfig().token) {
+        try {
+          const agentResponse = await gatewayChat.send(
+            [{ role: 'user', content: fullMessage }],
+            undefined, // onToken — streaming text updates handled by hook
+            async (response) => {
+              // Store agent response in Supabase for history
+              if (response && response.trim()) {
+                await sendChatMessage(activeThreadId, response, agent.name);
+              }
+              setIsTyping(false);
+            },
+            (error) => {
+              console.error('Gateway error:', error);
+              setIsTyping(false);
+            },
+          );
+        } catch (err) {
+          console.error('Gateway send failed, message stored in Supabase only:', err);
+          setIsTyping(false);
+        }
+      }
     } catch (err) {
       console.error('Send failed:', err);
       setInput(msg);
@@ -424,6 +455,18 @@ export default function ChatPane({
           );
         })}
         <div className="flex-1" />
+        {/* Gateway status indicator */}
+        {gatewayStatus.connected ? (
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[9px] text-green-400" title={'Gateway connected (' + gatewayStatus.latency + 'ms)'}>
+            <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
+            Live
+          </div>
+        ) : (
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline — messages stored only">
+            <div className="h-1.5 w-1.5 rounded-full bg-white/20" />
+            Local
+          </div>
+        )}
         <button onClick={createThread} className="flex h-6 w-6 items-center justify-center rounded-md text-white/25 transition-colors hover:bg-white/[0.05] hover:text-white/50">
           <Plus className="h-3.5 w-3.5" />
         </button>
