@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   BarChart,
+  ComposedChart,
+  Line,
   Bar,
   AreaChart,
   Area,
@@ -312,7 +314,7 @@ export default function FinOpsView() {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-white/80">Daily Spend</h3>
-                <p className="text-[11px] text-white/30">Cost per day</p>
+                <p className="text-[11px] text-white/30">Daily spend & API call volume</p>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-1.5 w-1.5 rounded-full bg-neon animate-pulse" />
@@ -321,13 +323,15 @@ export default function FinOpsView() {
             </div>
             <div className="h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dailyChart} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <ComposedChart data={dailyChart} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                   <XAxis dataKey="day" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={{ stroke: 'rgba(255,255,255,0.06)' }} tickLine={false} />
-                  <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => '$' + v.toFixed(2)} />
+                  <YAxis yAxisId="left" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => '$' + v.toFixed(2)} />
                   <Tooltip content={<ChartTooltip />} />
-                  <Bar dataKey="cost" name="Cost" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                  <YAxis yAxisId="right" orientation="right" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <Bar yAxisId="left" dataKey="cost" name="Cost" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Line yAxisId="right" type="monotone" dataKey="calls" name="Calls" stroke="#00ff41" strokeWidth={2} dot={{ fill: '#00ff41', r: 3 }} />
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
