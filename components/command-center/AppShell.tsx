@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server, Shield, Coins, Zap } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server, Shield, Coins, Zap, Clock, Terminal, Settings as SettingsIcon } from 'lucide-react';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -20,7 +20,10 @@ import ProjectsView from './views/ProjectsView';
 import ActivityView from './views/ActivityView';
 import FilesView from './views/FilesView';
 import SystemView from './views/SystemView';
-import AgentDetailView from './AgentDetailView';
+import AgentDetailView from './views/AgentDetailView';
+import CronView from './views/CronView';
+import LogsView from './views/LogsView';
+import SettingsView from './views/SettingsView';
 import type { AgentId, TabItem } from './types';
 
 const PINNED_TABS: TabItem[] = [
@@ -33,7 +36,10 @@ const PINNED_TABS: TabItem[] = [
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
   { id: 'files', label: 'Files', icon: Upload, pinned: true },
   { id: 'system', label: 'System', icon: Server, pinned: true },
+  { id: 'cron', label: 'Cron', icon: Clock, pinned: true },
+  { id: 'logs', label: 'Logs', icon: Terminal, pinned: true },
   { id: 'finops', label: 'FinOps', icon: DollarSign, pinned: true },
+  { id: 'settings', label: 'Settings', icon: SettingsIcon, pinned: true },
 ];
 
 export default function AppShell() {
@@ -104,6 +110,12 @@ export default function AppShell() {
         return <FilesView />;
       case 'system':
         return <SystemView />;
+      case 'cron':
+        return <CronView />;
+      case 'logs':
+        return <LogsView />;
+      case 'settings':
+        return <SettingsView />;
       default:
         if (tab.type === 'memory-file') {
           return (
