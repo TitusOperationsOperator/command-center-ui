@@ -13,6 +13,14 @@ interface ChromeTabsProps {
   onCloseTab: (tabId: string) => void;
 }
 
+// Agent-specific colors for tab indicators
+const TAB_COLORS: Record<string, string> = {
+  'agent-titus': '#3b82f6',
+  'agent-looty': '#ffd700',
+  'agent-minibolt': '#22c55e',
+};
+const DEFAULT_TAB_COLOR = '#e8721a'; // burnt orange
+
 export default function ChromeTabs({
   tabs,
   activeTabId,
@@ -22,11 +30,14 @@ export default function ChromeTabs({
   const { show: showCtx } = useContextMenu();
   const { toast } = useToast();
 
+  const activeColor = TAB_COLORS[activeTabId] || DEFAULT_TAB_COLOR;
+
   return (
     <div className="flex h-10 items-end gap-0.5 bg-space px-2 pt-1.5 overflow-x-auto scrollbar-thin">
       {tabs.map((tab) => {
         const isActive = activeTabId === tab.id;
         const Icon = tab.icon;
+        const tabColor = TAB_COLORS[tab.id] || DEFAULT_TAB_COLOR;
         return (
           <div
             key={tab.id}
@@ -37,7 +48,10 @@ export default function ChromeTabs({
             }`}
             onClick={() => onTabChange(tab.id)}
           >
-            <Icon className="h-3 w-3 flex-shrink-0" />
+            <Icon
+              className="h-3 w-3 flex-shrink-0"
+              style={isActive && TAB_COLORS[tab.id] ? { color: tabColor } : undefined}
+            />
             <span className="hidden xs:inline sm:inline max-w-[120px] truncate">
               {tab.label}
             </span>
@@ -61,8 +75,11 @@ export default function ChromeTabs({
             {isActive && (
               <motion.div
                 layoutId="chrome-tab-indicator"
-                className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-neon/60"
-                style={{ boxShadow: '0 0 8px rgba(232, 114, 26, 0.4)' }}
+                className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full"
+                style={{
+                  backgroundColor: tabColor + '90',
+                  boxShadow: `0 0 8px ${tabColor}60`,
+                }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               />
             )}
