@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, CheckCircle2, AlertCircle, Clock, Zap } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -70,7 +71,9 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
     return Math.floor(hrs / 24) + 'd ago';
   }
 
-  return (
+  if (typeof window === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -78,14 +81,16 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40"
+            className="fixed inset-0"
+            style={{ zIndex: 9998 }}
             onClick={onClose}
           />
           <motion.div
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            className="absolute right-12 top-12 z-50 w-[360px] max-h-[480px] glass-card rounded-xl border border-white/[0.08] shadow-2xl overflow-hidden"
+            className="fixed right-16 top-14 w-[360px] max-h-[480px] rounded-xl border border-white/[0.08] shadow-2xl overflow-hidden"
+            style={{ zIndex: 9999, background: 'rgba(10, 12, 20, 0.97)', backdropFilter: 'blur(20px)' }}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
               <div className="flex items-center gap-2">
@@ -133,6 +138,7 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

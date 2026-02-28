@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server, Shield, Zap, Calendar, Settings, Terminal } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Folder, Activity, Upload, Server, Shield, Coins, Zap } from 'lucide-react';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -20,28 +20,20 @@ import ProjectsView from './views/ProjectsView';
 import ActivityView from './views/ActivityView';
 import FilesView from './views/FilesView';
 import SystemView from './views/SystemView';
-import AgentDetailView from './views/AgentDetailView';
-import CronView from './views/CronView';
-import SettingsView from './views/SettingsView';
-import LogsView from './views/LogsView';
+import AgentDetailView from './AgentDetailView';
 import type { AgentId, TabItem } from './types';
-
-const DollarIcon = DollarSign;
 
 const PINNED_TABS: TabItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, pinned: true },
-  { id: 'agent-titus', label: 'Titus ⚡', icon: Shield, pinned: true },
-  { id: 'agent-looty', label: 'Looty 🪙', icon: DollarSign, pinned: true },
-  { id: 'agent-bolt', label: 'Mini Bolt 🔨', icon: Zap, pinned: true },
+  { id: 'agent-titus', label: 'Titus ⚡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
+  { id: 'agent-looty', label: 'Looty 🪙', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
+  { id: 'agent-minibolt', label: 'Mini Bolt 🔩', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
   { id: 'projects', label: 'Projects', icon: Folder, pinned: true },
   { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
   { id: 'files', label: 'Files', icon: Upload, pinned: true },
-  { id: 'cron', label: 'Cron', icon: Calendar, pinned: true },
-  { id: 'logs', label: 'Logs', icon: Terminal, pinned: true },
   { id: 'system', label: 'System', icon: Server, pinned: true },
   { id: 'finops', label: 'FinOps', icon: DollarSign, pinned: true },
-  { id: 'settings', label: 'Settings', icon: Settings, pinned: true },
 ];
 
 export default function AppShell() {
@@ -92,20 +84,26 @@ export default function AppShell() {
     const tab = tabs.find((t) => t.id === activeTabId);
     if (!tab) return <DashboardView />;
 
+    // Agent detail tabs
+    if (tab.type === 'agent' && tab.data?.agentId) {
+      return <AgentDetailView agentId={tab.data.agentId} />;
+    }
+
     switch (tab.id) {
-      case 'dashboard': return <DashboardView />;
-      case 'finops': return <FinOpsView />;
-      case 'memory': return <MemoryView onOpenFile={openTab} />;
-      case 'projects': return <ProjectsView />;
-      case 'activity': return <ActivityView />;
-      case 'files': return <FilesView />;
-      case 'system': return <SystemView />;
-      case 'agent-titus': return <AgentDetailView agentId="titus" />;
-      case 'agent-looty': return <AgentDetailView agentId="looty" />;
-      case 'agent-bolt': return <AgentDetailView agentId="bolt" />;
-      case 'cron': return <CronView />;
-      case 'settings': return <SettingsView />;
-      case 'logs': return <LogsView />;
+      case 'dashboard':
+        return <DashboardView />;
+      case 'finops':
+        return <FinOpsView />;
+      case 'memory':
+        return <MemoryView onOpenFile={openTab} />;
+      case 'projects':
+        return <ProjectsView />;
+      case 'activity':
+        return <ActivityView />;
+      case 'files':
+        return <FilesView />;
+      case 'system':
+        return <SystemView />;
       default:
         if (tab.type === 'memory-file') {
           return (
@@ -126,17 +124,41 @@ export default function AppShell() {
       <div className="relative flex flex-1 overflow-hidden">
         <div className="hidden lg:flex h-full w-full">
           <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel defaultSize={22} minSize={15} maxSize={35} className="min-w-0">
-              <ChatPane activeAgent={activeAgent} onSelectAgent={handleSelectAgent} activeThreadId={activeThreadId} onSelectThread={handleSelectThread} />
+            <ResizablePanel
+              defaultSize={22}
+              minSize={15}
+              maxSize={35}
+              className="min-w-0"
+            >
+              <ChatPane
+                activeAgent={activeAgent}
+                onSelectAgent={handleSelectAgent}
+                activeThreadId={activeThreadId}
+                onSelectThread={handleSelectThread}
+              />
             </ResizablePanel>
+
             <ResizableHandle />
+
             <ResizablePanel defaultSize={78} className="min-w-0">
               <div className="flex h-full flex-col">
-                <ChromeTabs tabs={tabs} activeTabId={activeTabId} onTabChange={setActiveTabId} onCloseTab={closeTab} />
+                <ChromeTabs
+                  tabs={tabs}
+                  activeTabId={activeTabId}
+                  onTabChange={setActiveTabId}
+                  onCloseTab={closeTab}
+                />
                 <CommandBar />
                 <main className="flex-1 overflow-hidden">
                   <AnimatePresence mode="wait">
-                    <motion.div key={activeTabId} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} className="h-full overflow-y-auto scrollbar-thin">
+                    <motion.div
+                      key={activeTabId}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+                      className="h-full overflow-y-auto scrollbar-thin"
+                    >
                       {renderMainStage()}
                     </motion.div>
                   </AnimatePresence>
@@ -147,11 +169,23 @@ export default function AppShell() {
         </div>
 
         <div className="flex flex-1 flex-col lg:hidden">
-          <ChromeTabs tabs={tabs} activeTabId={activeTabId} onTabChange={setActiveTabId} onCloseTab={closeTab} />
+          <ChromeTabs
+            tabs={tabs}
+            activeTabId={activeTabId}
+            onTabChange={setActiveTabId}
+            onCloseTab={closeTab}
+          />
           <CommandBar />
           <main className="flex-1 overflow-hidden">
             <AnimatePresence mode="wait">
-              <motion.div key={activeTabId} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} className="h-full overflow-y-auto scrollbar-thin">
+              <motion.div
+                key={activeTabId}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+                className="h-full overflow-y-auto scrollbar-thin"
+              >
                 {renderMainStage()}
               </motion.div>
             </AnimatePresence>
@@ -159,7 +193,14 @@ export default function AppShell() {
         </div>
       </div>
 
-      <MobileChatSheet open={drawerOpen} onOpenChange={setDrawerOpen} activeAgent={activeAgent} onSelectAgent={handleSelectAgent} activeThreadId={activeThreadId} onSelectThread={handleSelectThread} />
+      <MobileChatSheet
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        activeAgent={activeAgent}
+        onSelectAgent={handleSelectAgent}
+        activeThreadId={activeThreadId}
+        onSelectThread={handleSelectThread}
+      />
     </div>
   );
 }

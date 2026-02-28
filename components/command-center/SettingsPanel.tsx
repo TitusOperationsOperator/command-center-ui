@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, X, Database, Wifi, Key, Server, Globe, Volume2 } from 'lucide-react';
 
@@ -10,7 +11,9 @@ interface SettingsPanelProps {
 }
 
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
-  return (
+  if (typeof window === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -18,14 +21,16 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/30"
+            className="fixed inset-0 bg-black/30"
+            style={{ zIndex: 9998 }}
             onClick={onClose}
           />
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="fixed right-0 top-0 bottom-0 z-50 w-[380px] glass-card border-l border-white/[0.08] shadow-2xl overflow-y-auto"
+            className="fixed right-0 top-0 bottom-0 w-[380px] border-l border-white/[0.08] shadow-2xl overflow-y-auto"
+            style={{ zIndex: 9999, background: 'rgba(10, 12, 20, 0.97)', backdropFilter: 'blur(20px)' }}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-2">
@@ -134,6 +139,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
