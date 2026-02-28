@@ -1,5 +1,7 @@
 'use client';
 
+import { useContextMenu } from './ContextMenuProvider';
+import { useToast } from './Toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { TabItem } from './types';
@@ -17,6 +19,9 @@ export default function ChromeTabs({
   onTabChange,
   onCloseTab,
 }: ChromeTabsProps) {
+  const { show: showCtx } = useContextMenu();
+  const { toast } = useToast();
+
   return (
     <div className="flex h-10 items-end gap-0.5 bg-space px-2 pt-1.5 overflow-x-auto scrollbar-thin">
       {tabs.map((tab) => {
