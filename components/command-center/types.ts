@@ -26,6 +26,7 @@ export interface TabItem {
   pinned: boolean;
   type?: string;
   data?: any;
+  badge?: number;
 }
 
 export const AGENT_CONFIG: Record<

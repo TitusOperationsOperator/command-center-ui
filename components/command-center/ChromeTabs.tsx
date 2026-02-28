@@ -48,10 +48,17 @@ export default function ChromeTabs({
             }`}
             onClick={() => onTabChange(tab.id)}
           >
-            <Icon
-              className="h-3 w-3 flex-shrink-0"
-              style={isActive && TAB_COLORS[tab.id] ? { color: tabColor } : undefined}
-            />
+            <div className="relative">
+              <Icon
+                className="h-3 w-3 flex-shrink-0"
+                style={isActive && TAB_COLORS[tab.id] ? { color: tabColor } : undefined}
+              />
+              {tab.badge !== undefined && tab.badge > 0 && (
+                <div className="absolute -top-1 -right-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-[#e8740c] px-1 text-[9px] font-medium text-white">
+                  {tab.badge > 99 ? '99+' : tab.badge}
+                </div>
+              )}
+            </div>
             <span className="hidden xs:inline sm:inline max-w-[120px] truncate">
               {tab.label}
             </span>

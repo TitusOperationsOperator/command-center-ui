@@ -8,6 +8,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from '@/components/ui/resizable';
+import { supabase } from '@/lib/supabase';
 import ChromeTabs from './ChromeTabs';
 import ContextMenuProvider from './ContextMenuProvider';
 import CommandPalette from './CommandPalette';
@@ -34,7 +35,7 @@ const PINNED_TABS: TabItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, pinned: true },
   { id: 'agent-titus', label: 'Titus âš¡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
   { id: 'agent-looty', label: 'Looty ðŸª™', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
-  { id: 'agent-minibolt', label: 'Mini Bolt ðŸ”©', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
+  { id: 'agent-minibolt', label: 'Mini Bolt ðŸ"©', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
   { id: 'projects', label: 'Projects', icon: Folder, pinned: true },
   { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
@@ -53,6 +54,34 @@ export default function AppShell() {
   const [activeTabId, setActiveTabId] = useState('dashboard');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cmdkOpen, setCmdkOpen] = useState(false);
+  const [activityBadge, setActivityBadge] = useState(0);
+
+  // Fetch activity badge count
+  async function fetchActivityBadge() {
+    const last24h = new Date(Date.now() - 24 * 3600000).toISOString();
+    const { count } = await supabase
+      .from('agent_log')
+      .select('id', { count: 'exact', head: true })
+      .gte('created_at', last24h);
+    setActivityBadge(count || 0);
+  }
+
+  useEffect(() => {
+    fetchActivityBadge();
+    const interval = setInterval(fetchActivityBadge, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update tabs with activity badge
+  useEffect(() => {
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === 'activity'
+          ? { ...tab, badge: activityBadge > 0 ? activityBadge : undefined }
+          : tab
+      )
+    );
+  }, [activityBadge]);
 
   // Keyboard shortcuts: Alt+1-9 for tabs, Alt+0 for last tab
   useEffect(() => {
