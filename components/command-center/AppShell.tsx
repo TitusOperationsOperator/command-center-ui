@@ -33,9 +33,9 @@ import type { AgentId, TabItem } from './types';
 
 const PINNED_TABS: TabItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, pinned: true },
-  { id: 'agent-titus', label: 'Titus âš¡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
-  { id: 'agent-looty', label: 'Looty ðŸª™', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
-  { id: 'agent-minibolt', label: 'Mini Bolt ðŸ"©', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
+  { id: 'agent-titus', label: 'Titus Ã¢Å¡Â¡', icon: Shield, pinned: true, type: 'agent', data: { agentId: 'titus' } },
+  { id: 'agent-looty', label: 'Looty Ã°Å¸Âªâ„¢', icon: Coins, pinned: true, type: 'agent', data: { agentId: 'looty' } },
+  { id: 'agent-minibolt', label: 'Mini Bolt Ã°Å¸"Â©', icon: Zap, pinned: true, type: 'agent', data: { agentId: 'minibolt' } },
   { id: 'projects', label: 'Projects', icon: Folder, pinned: true },
   { id: 'activity', label: 'Activity', icon: Activity, pinned: true },
   { id: 'memory', label: 'Memory', icon: FileText, pinned: true },
@@ -188,7 +188,7 @@ export default function AppShell() {
       <div className="absolute inset-0 bg-gradient-radial from-neon/[0.015] via-transparent to-transparent pointer-events-none" />
 
       <div className="relative flex flex-1 overflow-hidden">
-        <div className="hidden lg:flex h-full w-full">
+        <div className="hidden md:flex h-full w-full">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel
               defaultSize={22}
@@ -234,7 +234,7 @@ export default function AppShell() {
           </ResizablePanelGroup>
         </div>
 
-        <div className="flex flex-1 flex-col lg:hidden">
+        <div className="flex flex-1 flex-col md:hidden">
           <ChromeTabs
             tabs={tabs}
             activeTabId={activeTabId}
