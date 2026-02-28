@@ -93,7 +93,6 @@ export default function DashboardView() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [historicalCost, setHistoricalCost] = useState(0);
-  const [secondsSinceRefresh, setSecondsSinceRefresh] = useState(0);
   const { show: showCtx } = useContextMenu();
   const { toast } = useToast();
 
@@ -131,21 +130,12 @@ export default function DashboardView() {
     setHistoricalCost(historicalTotal);
     setLoading(false);
     setRefreshing(false);
-    setSecondsSinceRefresh(0); // Reset timer on refresh
   }
 
   useEffect(() => {
     fetchAll();
     const interval = setInterval(fetchAll, 30000);
     return () => clearInterval(interval);
-  }, []);
-
-  // Timer that counts up every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSecondsSinceRefresh(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
   }, []);
 
   // Usage calculations
@@ -198,12 +188,7 @@ export default function DashboardView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-white/90">Command Center</h2>
-            <span className="font-mono text-[9px] text-white/20">
-              Last refreshed: {secondsSinceRefresh}s ago
-            </span>
-          </div>
+          <h2 className="text-lg font-semibold text-white/90">Command Center</h2>
           <p className="text-xs text-white/30">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
