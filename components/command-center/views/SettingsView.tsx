@@ -4,9 +4,27 @@ import { useAuth } from '@/lib/auth';
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Shield, Wifi, Database, Bell, Moon, Sun } from 'lucide-react';
+import { Settings, Shield, Wifi, Database, Bell, Moon, Sun, Clock, Cpu } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import GatewaySetup from '../GatewaySetup';
+
+const CRON_JOBS = [
+  { job: 'Titus Nightly Evolution', schedule: '1:00 AM', model: 'GPT-4.1 Mini' },
+  { job: 'YouTube Research', schedule: '1:30 AM', model: 'GPT-4.1 Mini' },
+  { job: 'Looty Nightly Evolution', schedule: '2:00 AM', model: 'GPT-4.1 Mini' },
+  { job: 'Auto-update check', schedule: '3:00 AM', model: 'GPT-4.1 Mini' },
+  { job: 'Windows update check', schedule: '3:30 AM', model: 'GPT-4.1 Mini' },
+  { job: 'Morning brief', schedule: '4:00 AM', model: 'GPT-4.1 Mini' },
+  { job: 'Sync API usage', schedule: 'Every 4h', model: 'GPT-4.1 Mini' },
+  { job: 'Sync Looty Dashboard', schedule: 'Every 30min', model: 'GPT-4.1 Mini' },
+];
+
+const MODEL_ASSIGNMENTS = [
+  { agent: 'Titus', model: 'Claude Opus 4.6', cost: '$15/$75 per 1M', color: '#3b82f6' },
+  { agent: 'Looty', model: 'Claude Sonnet 4.5', cost: '$3/$15 per 1M', color: '#ffd700' },
+  { agent: 'Mini Bolt', model: 'Claude Sonnet 4.5', cost: '$3/$15 per 1M', color: '#22c55e' },
+  { agent: 'Heartbeats/Cron', model: 'GPT-4.1 Mini', cost: '$0.40/$1.60 per 1M', color: '#a855f7' },
+];
 
 export default function SettingsView() {
   const { user, signOut } = useAuth();
@@ -65,8 +83,69 @@ export default function SettingsView() {
         <GatewaySetup />
       </motion.div>
 
-      {/* Appearance */}
+      {/* Cron Jobs */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Clock className="h-4 w-4 text-neon/50" />
+          <h3 className="text-sm font-medium text-white/70">Cron Jobs</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-white/[0.06] text-left">
+                <th className="pb-2 pr-4 text-white/40 font-medium">Job</th>
+                <th className="pb-2 pr-4 text-white/40 font-medium">Schedule</th>
+                <th className="pb-2 text-white/40 font-medium">Model</th>
+              </tr>
+            </thead>
+            <tbody>
+              {CRON_JOBS.map((job, idx) => (
+                <tr key={idx} className="border-b border-white/[0.03]">
+                  <td className="py-2 pr-4 text-white/60">{job.job}</td>
+                  <td className="py-2 pr-4 text-white/50">{job.schedule}</td>
+                  <td className="py-2 text-white/50">{job.model}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
+
+      {/* Model Assignments */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Cpu className="h-4 w-4 text-neon/50" />
+          <h3 className="text-sm font-medium text-white/70">Model Assignments</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-white/[0.06] text-left">
+                <th className="pb-2 pr-4 text-white/40 font-medium">Agent</th>
+                <th className="pb-2 pr-4 text-white/40 font-medium">Primary Model</th>
+                <th className="pb-2 text-white/40 font-medium">Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MODEL_ASSIGNMENTS.map((assignment, idx) => (
+                <tr key={idx} className="border-b border-white/[0.03]">
+                  <td className="py-2 pr-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full" style={{ backgroundColor: assignment.color }} />
+                      <span className="text-white/60">{assignment.agent}</span>
+                    </div>
+                  </td>
+                  <td className="py-2 pr-4 text-white/50">{assignment.model}</td>
+                  <td className="py-2 text-white/50">{assignment.cost}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
+
+      {/* Appearance */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-5">
         <div className="flex items-center gap-2 mb-4">
           <Moon className="h-4 w-4 text-neon/50" />
           <h3 className="text-sm font-medium text-white/70">Appearance</h3>
@@ -78,7 +157,7 @@ export default function SettingsView() {
       </motion.div>
 
       {/* Notifications */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-5">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card p-5">
         <div className="flex items-center gap-2 mb-4">
           <Bell className="h-4 w-4 text-neon/50" />
           <h3 className="text-sm font-medium text-white/70">Notifications</h3>
@@ -90,7 +169,7 @@ export default function SettingsView() {
       </motion.div>
 
       {/* About */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-5">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card p-5">
         <div className="flex items-center gap-2 mb-4">
           <Shield className="h-4 w-4 text-neon/50" />
           <h3 className="text-sm font-medium text-white/70">About</h3>
@@ -115,7 +194,7 @@ export default function SettingsView() {
         </div>
       </motion.div>
         {/* Account */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card p-5 space-y-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="glass-card p-5 space-y-3">
           <h3 className="text-xs font-medium text-white/50">Account</h3>
           <div className="flex items-center justify-between">
             <div>
