@@ -90,6 +90,7 @@ export default function DashboardView() {
   const [cronJobs, setCronJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [historicalCost, setHistoricalCost] = useState(0);
 
   // Hardcoded cron jobs from OpenClaw (these come from the gateway, not Supabase)
   const CRON_JOBS = [
@@ -108,17 +109,21 @@ export default function DashboardView() {
   }
 
   async function fetchAll() {
-    const [usageRes, tasksRes, projectsRes, logsRes] = await Promise.all([
+    const [usageRes, tasksRes, projectsRes, logsRes, finopsRes] = await Promise.all([
       supabase.from('api_usage').select('*').order('ts', { ascending: false }).limit(500),
       supabase.from('tasks').select('*, projects(name)').order('priority', { ascending: false }).limit(20),
       supabase.from('projects').select('*').order('priority', { ascending: false }),
       supabase.from('agent_log').select('*').order('event_time', { ascending: false }).limit(15),
+      supabase.from('finops_costs').select('cost'),
     ]);
 
     setUsage(usageRes.data || []);
     setTasks(tasksRes.data || []);
     setProjects(projectsRes.data || []);
     setLogs(logsRes.data || []);
+    // Calculate historical total from finops_costs (pre-cost-logger spend)
+    const historicalTotal = (finopsRes.data || []).reduce((s, r) => s + Number(r.cost), 0);
+    setHistoricalCost(historicalTotal);
     setLoading(false);
     setRefreshing(false);
   }
@@ -134,7 +139,8 @@ export default function DashboardView() {
   todayStart.setHours(0, 0, 0, 0);
   const todayUsage = usage.filter(u => new Date(u.ts) >= todayStart);
   const todayCost = todayUsage.reduce((s, u) => s + Number(u.cost_usd), 0);
-  const totalCost = usage.reduce((s, u) => s + Number(u.cost_usd), 0);
+  const trackedCost = usage.reduce((s, u) => s + Number(u.cost_usd), 0);
+  const totalCost = historicalCost + trackedCost;
   const totalCalls = usage.length;
 
   // Daily chart data from all usage
