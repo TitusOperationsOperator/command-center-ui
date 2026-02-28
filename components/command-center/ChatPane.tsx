@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -374,7 +374,7 @@ export default function ChatPane({
         try {
           const agentResponse = await gatewayChat.send(
             [{ role: 'user', content: fullMessage }],
-            undefined, // onToken â€” streaming text updates handled by hook
+            undefined, // onToken Ã¢â‚¬â€ streaming text updates handled by hook
             async (response) => {
               // Store agent response in Supabase for history
               if (response && response.trim()) {
@@ -482,7 +482,7 @@ export default function ChatPane({
             Live
           </div>
         ) : (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline â€” messages stored only">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline Ã¢â‚¬â€ messages stored only">
             <div className="h-1.5 w-1.5 rounded-full bg-white/20" />
             Local
           </div>
@@ -582,7 +582,7 @@ export default function ChatPane({
         </div>
       </div>
 
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â UPGRADED INPUT AREA Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â UPGRADED INPUT AREA ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */}
       <div className="relative border-t border-white/[0.06]">
         {/* Slash hints */}
         <AnimatePresence>
@@ -695,13 +695,14 @@ export default function ChatPane({
               </DropdownMenu>
             </div>
 
-            <span className="text-[10px] text-white/10">Ã¢ÂÅ½ Send Ã‚Â· Ã¢â€¡Â§Ã¢ÂÅ½ New line</span>
+            <span className="text-[10px] text-white/10">ÃƒÂ¢Ã‚ÂÃ…Â½ Send Ãƒâ€šÃ‚Â· ÃƒÂ¢Ã¢â‚¬Â¡Ã‚Â§ÃƒÂ¢Ã‚ÂÃ…Â½ New line</span>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 
 
