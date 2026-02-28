@@ -8,6 +8,7 @@ import {
   File, FolderOpen, Send, Eye, Play, Mail, Search, Database, Download,
   Copy, ExternalLink, TrendingUp, Target, Package, Megaphone, BarChart3,
   Code, GitBranch, Terminal,
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -256,6 +257,60 @@ function LootyProductTab({ color }: { color: string }) {
         </div>
       </div>
 
+
+      {/* Blockers */}
+      {status?.blockers && status.blockers.length > 0 && (
+        <div className="glass-card p-4">
+          <h4 className="text-sm font-medium text-white/70 mb-3 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-400/80" />
+            Blockers ({status.blockers.length})
+          </h4>
+          <div className="space-y-2">
+            {status.blockers.map((b: string, i: number) => (
+              <div key={i} className="flex items-start gap-2 text-xs">
+                <span className="text-amber-400/60 mt-0.5">●</span>
+                <span className="text-white/50">{b}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Confidence Levels */}
+      {status?.confidence && (
+        <div className="glass-card p-4">
+          <h4 className="text-sm font-medium text-white/70 mb-3">Confidence Levels</h4>
+          <div className="space-y-3">
+            {Object.entries(status.confidence).map(([key, val]: [string, any]) => (
+              <div key={key}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-white/40">{key.replace(/([A-Z])/g, " $1").trim()}</span>
+                  <span style={{ color: val >= 60 ? "#22c55e" : val >= 40 ? "#eab308" : "#ef4444" }}>{val}%</span>
+                </div>
+                <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all" style={{ width: val + "%", background: val >= 60 ? "#22c55e" : val >= 40 ? "#eab308" : "#ef4444" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Activity */}
+      {dashboard?.recentActivity && dashboard.recentActivity.length > 0 && (
+        <div className="glass-card p-4">
+          <h4 className="text-sm font-medium text-white/70 mb-3">Recent Activity</h4>
+          <div className="space-y-2">
+            {dashboard.recentActivity.map((a: any, i: number) => (
+              <div key={i} className="flex items-start gap-3 text-xs">
+                <span className="text-white/20 flex-shrink-0 font-mono text-[10px]">{a.date}</span>
+                <span className="text-white/50">{a.action}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Experiment tracker */}
       <div className="glass-card p-4">
         <h4 className="text-sm font-medium text-white/70 mb-3 flex items-center gap-2">
@@ -263,12 +318,12 @@ function LootyProductTab({ color }: { color: string }) {
           Experiment #1
         </h4>
         <div className="space-y-2 text-xs">
-          <div className="flex justify-between"><span className="text-white/30">Product</span><span className="text-white/60">AI Freelance Catalyst</span></div>
+          <div className="flex justify-between"><span className="text-white/30">Product</span><span className="text-white/60">{status?.productStatus?.name || 'TBD'}</span></div>
           <div className="flex justify-between"><span className="text-white/30">Platform</span><span className="text-white/60">Gumroad</span></div>
-          <div className="flex justify-between"><span className="text-white/30">Price</span><span style={{ color }}>$29</span></div>
+          <div className="flex justify-between"><span className="text-white/30">Price</span><span style={{ color }}>${status?.productStatus?.price || '?'}</span></div>
           <div className="flex justify-between"><span className="text-white/30">Target</span><span className="text-white/60">&gt;1.5% conversion</span></div>
           <div className="flex justify-between"><span className="text-white/30">Kill criteria</span><span className="text-white/60">500 views, 0 sales, 14 days</span></div>
-          <div className="flex justify-between"><span className="text-white/30">Budget spent</span><span className="text-white/60">$0 / $500</span></div>
+          <div className="flex justify-between"><span className="text-white/30">Budget spent</span><span className="text-white/60">${status?.budget?.spent || 0} / ${status?.budget?.limit || 500}</span></div>
           <div className="flex justify-between"><span className="text-white/30">Revenue</span><span style={{ color }}>$0</span></div>
         </div>
       </div>
