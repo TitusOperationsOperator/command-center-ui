@@ -12,10 +12,10 @@ const config: Config = {
       colors: {
         // Burnt orange — primary system accent
         neon: {
-          DEFAULT: '#e8721a',
+          DEFAULT: '#e8740c',
           dim: '#c45f14',
-          glow: 'rgba(232, 114, 26, 0.15)',
-          border: 'rgba(232, 114, 26, 0.25)',
+          glow: 'rgba(232, 116, 12, 0.15)',
+          border: 'rgba(232, 116, 12, 0.25)',
         },
         // Gold stays for warnings/highlights
         gold: {
@@ -26,12 +26,12 @@ const config: Config = {
         },
         // Burnt orange variants for direct use
         orange: {
-          DEFAULT: '#e8721a',
+          DEFAULT: '#e8740c',
           light: '#f09030',
           dim: '#c45f14',
           dark: '#a04d10',
-          glow: 'rgba(232, 114, 26, 0.15)',
-          border: 'rgba(232, 114, 26, 0.30)',
+          glow: 'rgba(232, 116, 12, 0.15)',
+          border: 'rgba(232, 116, 12, 0.30)',
         },
         space: {
           DEFAULT: '#0a0c14',
@@ -104,8 +104,8 @@ const config: Config = {
           to: { height: '0' },
         },
         pulse_glow: {
-          '0%, 100%': { boxShadow: '0 0 8px rgba(232, 114, 26, 0.4)' },
-          '50%': { boxShadow: '0 0 20px rgba(232, 114, 26, 0.8)' },
+          '0%, 100%': { boxShadow: '0 0 8px rgba(232, 116, 12, 0.4)' },
+          '50%': { boxShadow: '0 0 20px rgba(232, 116, 12, 0.8)' },
         },
         pulse_dot: {
           '0%, 100%': { opacity: '1', transform: 'scale(1)' },
@@ -137,3 +137,4 @@ const config: Config = {
   plugins: [require('tailwindcss-animate')],
 };
 export default config;
+

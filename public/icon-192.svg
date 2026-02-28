@@ -7,6 +7,6 @@
     </linearGradient>
   </defs>
   <rect width="192" height="192" rx="38" fill="url(#bg)"/>
-  <text x="50%" y="55%" font-family="monospace" font-size="86" font-weight="bold" fill="#00ff41" text-anchor="middle" dominant-baseline="middle">⚡</text>
-  <text x="50%" y="80%" font-family="monospace" font-size="19" fill="#00ff4166" text-anchor="middle">CMD CTR</text>
+  <text x="50%" y="55%" font-family="monospace" font-size="86" font-weight="bold" fill="#e8740c" text-anchor="middle" dominant-baseline="middle">⚡</text>
+  <text x="50%" y="80%" font-family="monospace" font-size="19" fill="#e8740c66" text-anchor="middle">CMD CTR</text>
 </svg>
