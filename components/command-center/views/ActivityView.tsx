@@ -3,10 +3,12 @@
 import { motion } from 'framer-motion';
 import { Activity, Search } from 'lucide-react';
 import { useAgentLog } from '@/lib/hooks';
+import { useContextMenu } from '../ContextMenuProvider';
 import { useState } from 'react';
 
 export default function ActivityView() {
   const { data: logs, loading } = useAgentLog(100);
+  const { show } = useContextMenu();
   const [filter, setFilter] = useState('');
 
   const filtered = filter
@@ -69,6 +71,16 @@ export default function ActivityView() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               className="glass-card p-3"
+              onContextMenu={(e) => {
+                e.preventDefault();
+                show(e.clientX, e.clientY, [
+                  { label: 'Copy Action', icon: '📋', action: () => navigator.clipboard.writeText(item.action || '') },
+                  { label: 'Copy Detail', icon: '📝', action: () => navigator.clipboard.writeText(typeof item.detail === 'string' ? item.detail : JSON.stringify(item.detail)) },
+                  { label: 'Copy Source', icon: '🔗', action: () => navigator.clipboard.writeText(item.source || '') },
+                  { divider: true, label: '', action: () => {} },
+                  { label: 'Filter by: ' + (item.source || 'system'), icon: '🔍', action: () => setFilter(item.source || '') },
+                ]);
+              }}
             >
               <div className="flex items-start gap-3">
                 <div className="flex flex-col items-center gap-1 pt-1">

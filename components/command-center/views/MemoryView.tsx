@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Search, Star } from 'lucide-react';
 import { useMemories } from '@/lib/hooks';
+import { useContextMenu } from '../ContextMenuProvider';
 import type { TabItem } from '../types';
 
 interface MemoryViewProps {
@@ -12,6 +13,7 @@ interface MemoryViewProps {
 
 export default function MemoryView({ onOpenFile }: MemoryViewProps) {
   const { data: memories, loading } = useMemories(100);
+  const { show } = useContextMenu();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 

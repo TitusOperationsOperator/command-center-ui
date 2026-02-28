@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Terminal, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useContextMenu } from '../ContextMenuProvider';
 
 export default function LogsView() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { show } = useContextMenu();
 
   async function refresh() {
     setLoading(true);
@@ -53,7 +55,17 @@ export default function LogsView() {
             const source = log.channel || 'system';
             const detail = typeof log.detail === 'object' ? (log.detail?.msg || JSON.stringify(log.detail)) : (log.detail || '');
             return (
-              <div key={log.id} className={'flex items-start gap-2 px-3 py-1.5 border-b border-white/[0.03] ' + (i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]')}>
+              <div key={log.id} className={'flex items-start gap-2 px-3 py-1.5 border-b border-white/[0.03] cursor-context-menu ' + (i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]')}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  show(e.clientX, e.clientY, [
+                    { label: 'Copy Log Line', icon: '📋', action: () => navigator.clipboard.writeText(source + ' ' + log.action + ' ' + detail) },
+                    { label: 'Copy Detail', icon: '📝', action: () => navigator.clipboard.writeText(detail) },
+                    { divider: true, label: '', action: () => {} },
+                    { label: 'Source: ' + source, icon: '🔗', action: () => {}, disabled: true },
+                  ]);
+                }}
+              >
                 <span className="text-white/20 w-[140px] flex-shrink-0">{time ? new Date(time).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) : ''}</span>
                 <span className={'w-[80px] flex-shrink-0 ' + (source === 'titus' ? 'text-agent-titus/70' : source === 'looty' ? 'text-agent-looty/70' : source === 'minibolt' ? 'text-agent-bolt/70' : 'text-white/40')}>{source}</span>
                 <span className="text-gold/60 w-[140px] flex-shrink-0">{log.action}</span>
