@@ -187,10 +187,40 @@ export default function DashboardView() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-neon/20 border-t-neon" />
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 overflow-auto">
+      {/* Loading Skeleton */}
+      <div className="space-y-6">
+        {/* Top row: 4 stat card skeletons */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="glass-card p-4">
+              <div className="h-3 w-24 bg-white/[0.04] rounded animate-pulse mb-3" />
+              <div className="h-8 w-20 bg-white/[0.04] rounded animate-pulse mb-2" />
+              <div className="h-2 w-16 bg-white/[0.04] rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+        {/* Chart skeleton */}
+        <div className="glass-card p-6">
+          <div className="h-4 w-32 bg-white/[0.04] rounded animate-pulse mb-4" />
+          <div className="h-[220px] bg-white/[0.04] rounded-xl animate-pulse" />
+        </div>
+        {/* Agent card skeletons */}
+        <div className="glass-card p-6">
+          <div className="h-4 w-28 bg-white/[0.04] rounded animate-pulse mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="rounded-xl border border-white/[0.06] p-4">
+                <div className="h-8 w-8 bg-white/[0.04] rounded-lg animate-pulse mb-3" />
+                <div className="h-3 w-20 bg-white/[0.04] rounded animate-pulse mb-2" />
+                <div className="h-2 w-16 bg-white/[0.04] rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    );
+    </div>
+  );
   }
 
   return (
