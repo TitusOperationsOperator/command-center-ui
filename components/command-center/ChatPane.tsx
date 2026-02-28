@@ -550,41 +550,8 @@ export default function ChatPane({
 
         {/* Main input area */}
         <div className="px-3 py-2.5">
+          {/* Textarea + Send */}
           <div className="flex items-end gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-2 transition-all focus-within:border-white/[0.15] focus-within:bg-white/[0.04]" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}>
-            {/* Left actions */}
-            <div className="flex items-center gap-1 pb-0.5">
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="flex h-8 w-8 items-center justify-center rounded-xl text-white/25 transition-all hover:text-white/50 hover:bg-white/[0.05]" title="Attach file or image">
-                <Paperclip className="h-4 w-4" />
-              </button>
-
-              <DropdownMenu open={showTools} onOpenChange={setShowTools}>
-                <DropdownMenuTrigger asChild>
-                  <button type="button" className="flex h-8 items-center gap-1.5 rounded-xl px-2.5 text-white/25 transition-all hover:text-white/50 hover:bg-white/[0.05]">
-                    <Wrench className="h-3.5 w-3.5" />
-                    <span className="text-[11px]">Tools</span>
-                    <ChevronUp className="h-3 w-3" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" align="start" className="min-w-[200px] border-white/[0.08] bg-space-card/95 backdrop-blur-xl mb-1">
-                  <DropdownMenuLabel className="text-[10px] text-white/30 uppercase tracking-wider">Tools</DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-white/[0.06]" />
-                  {TOOLS.map((tool) => {
-                    const TIcon = tool.icon;
-                    return (
-                      <DropdownMenuItem key={tool.id} onClick={() => handleToolSelect(tool.id)} className="gap-3 py-2 text-white/60 hover:text-white/90 cursor-pointer">
-                        <TIcon className="h-4 w-4" style={{ color: agent.color + '80' }} />
-                        <div className="flex flex-col">
-                          <span className="text-xs">{tool.name}</span>
-                          <span className="text-[10px] text-white/30">{tool.desc}</span>
-                        </div>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            {/* Textarea */}
             <textarea
               ref={textareaRef}
               value={input}
@@ -621,9 +588,39 @@ export default function ChatPane({
             </div>
           </div>
 
-          {/* Helper text */}
+          {/* Bottom bar: actions left, hints right */}
           <div className="flex items-center justify-between px-1 pt-1.5">
-            <span className="text-[10px] text-white/15">Paste images · Attach files · Type / for commands</span>
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="flex h-7 w-7 items-center justify-center rounded-lg text-white/20 transition-all hover:text-white/45 hover:bg-white/[0.05]" title="Attach file or image">
+                <Paperclip className="h-3.5 w-3.5" />
+              </button>
+
+              <DropdownMenu open={showTools} onOpenChange={setShowTools}>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="flex h-7 items-center gap-1 rounded-lg px-2 text-white/20 transition-all hover:text-white/45 hover:bg-white/[0.05]">
+                    <Wrench className="h-3 w-3" />
+                    <span className="text-[10px]">Tools</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="min-w-[200px] border-white/[0.08] bg-space-card/95 backdrop-blur-xl mb-1">
+                  <DropdownMenuLabel className="text-[10px] text-white/30 uppercase tracking-wider">Tools</DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-white/[0.06]" />
+                  {TOOLS.map((tool) => {
+                    const TIcon = tool.icon;
+                    return (
+                      <DropdownMenuItem key={tool.id} onClick={() => handleToolSelect(tool.id)} className="gap-3 py-2 text-white/60 hover:text-white/90 cursor-pointer">
+                        <TIcon className="h-4 w-4" style={{ color: agent.color + '80' }} />
+                        <div className="flex flex-col">
+                          <span className="text-xs">{tool.name}</span>
+                          <span className="text-[10px] text-white/30">{tool.desc}</span>
+                        </div>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
             <span className="text-[10px] text-white/10">⏎ Send · ⇧⏎ New line</span>
           </div>
         </div>
