@@ -47,7 +47,7 @@ const AGENT_META: Record<string, any> = {
     name: 'Looty', emoji: 'Ã°Å¸Âªâ„¢', icon: Coins, color: '#ffd700',
     avatarUrl: null,
     role: 'Revenue Agent', tagline: 'Find money. Make money. Track money.',
-    model: 'google/gemini-3.1-pro', workspace: 'C:\\Users\\titus\\.openclaw\\workspace-looty',
+    model: 'anthropic/claude-sonnet-4-5', workspace: 'C:\\Users\\titus\\.openclaw\\workspace-looty',
     description: 'Revenue generation agent. Builds digital products, runs experiments, tracks budget. $500/mo target.',
     skills: [
       { name: 'Research Pipeline', icon: Search, status: 'active' },
@@ -149,12 +149,12 @@ function LootyProductTab({ color }: { color: string }) {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Package className="h-5 w-5" style={{ color }} />
-              <h3 className="text-base font-semibold text-white/90">The 2026 AI Freelance Catalyst</h3>
+              <h3 className="text-base font-semibold text-white/90">{status?.productStatus?.name || "No Product Yet"}</h3>
             </div>
-            <p className="text-xs text-white/40">50+ Prompts to Save 10 Hours a Week</p>
+            <p className="text-xs text-white/40">{status?.productStatus?.description || "Awaiting product setup"}</p>
           </div>
           <div className="text-right">
-            <span className="text-xl font-bold" style={{ color }}>$29</span>
+            <span className="text-xl font-bold" style={{ color }}>${status?.productStatus?.price || "?"}</span>
             <p className="text-[10px] text-white/30">Gumroad</p>
           </div>
         </div>
