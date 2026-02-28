@@ -80,6 +80,7 @@ export default function ChatPane({
   const [renameValue, setRenameValue] = useState('');
   const [slashIndex, setSlashIndex] = useState(0);
   const [showTools, setShowTools] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
   const gatewayStatus = useGatewayStatus();
   const gatewayChat = useGatewayChat(activeAgent);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -577,7 +578,15 @@ export default function ChatPane({
             ))
           )}
           <AnimatePresence>
-            {isTyping && <TypingIndicator agentName={agent.name} color={agent.color} />}
+            {streamingText && (
+              <ChatMessage
+                agentName="Titus"
+                content={streamingText}
+                timestamp="streaming..."
+                index={uniqueMessages.length}
+              />
+            )}
+            {isTyping && !streamingText && <TypingIndicator agentName={agent.name} color={agent.color} />}
           </AnimatePresence>
         </div>
       </div>
@@ -702,6 +711,9 @@ export default function ChatPane({
     </div>
   );
 }
+
+
+
 
 
 
