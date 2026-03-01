@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -92,6 +92,17 @@ export default function ChatPane({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const agent = AGENT_CONFIG[activeAgent];
+
+  // Deduplicate messages by content (removes duplicates within 2 seconds)
+  const deduplicateMessages = useCallback((msgs: ChatMsg[]) => {
+    const seen = new Set<string>();
+    return msgs.filter((msg, idx) => {
+      const key = `${msg.agent_name}:${msg.content}:${Math.floor(new Date(msg.created_at).getTime() / 2000)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, []);
   const slashMatches = matchCommands(input);
 
   // Deduplicate messages by ID
@@ -158,7 +169,7 @@ export default function ChatPane({
       .eq('thread_id', activeThreadId)
       .order('created_at', { ascending: true });
 
-    if (data) setMessages(data);
+    if (data) setMessages(deduplicateMessages(data));
     setLoadingMessages(false);
     scrollToBottom();
   }, [activeThreadId, scrollToBottom]);
@@ -192,7 +203,18 @@ export default function ChatPane({
           (payload) => {
             const newMsg = payload.new as ChatMsg;
             setMessages((prev) => {
+              // Deduplicate by ID
               if (prev.find((m) => m.id === newMsg.id)) return prev;
+              
+              // Deduplicate by content (ignore identical messages within 2 seconds)
+              const recent = prev.slice(-5); // check last 5 messages
+              const isDuplicate = recent.some((m) => 
+                m.content === newMsg.content && 
+                m.agent_name === newMsg.agent_name &&
+                (new Date(newMsg.created_at).getTime() - new Date(m.created_at).getTime()) < 2000
+              );
+              if (isDuplicate) return prev;
+              
               return [...prev, newMsg];
             });
             const sender = (newMsg.agent_name || '').toLowerCase();
@@ -254,7 +276,7 @@ export default function ChatPane({
         .eq('thread_id', activeThreadId)
         .order('created_at', { ascending: true });
       if (data && data.length !== messages.length) {
-        setMessages(data);
+        setMessages(deduplicateMessages(data));
         setIsTyping(false);
         scrollToBottom();
       }
@@ -424,7 +446,7 @@ export default function ChatPane({
         try {
           const agentResponse = await gatewayChat.send(
             [{ role: 'user', content: fullMessage }],
-            undefined, // onToken Ã¢â‚¬â€ streaming text updates handled by hook
+            undefined, // onToken ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â streaming text updates handled by hook
             async (response) => {
               // Store agent response in Supabase for history
               if (response && response.trim()) {
@@ -532,7 +554,7 @@ export default function ChatPane({
             Live
           </div>
         ) : (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline Ã¢â‚¬â€ messages stored only">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] text-[9px] text-white/20" title="Gateway offline ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â messages stored only">
             <div className="h-1.5 w-1.5 rounded-full bg-white/20" />
             Local
           </div>
@@ -657,7 +679,7 @@ export default function ChatPane({
         </div>
       </div>
 
-      {/* ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â UPGRADED INPUT AREA ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */}
+      {/* ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â UPGRADED INPUT AREA ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â */}
       <div className="relative border-t border-white/[0.06]">
         {/* Slash hints */}
         <AnimatePresence>
@@ -770,7 +792,7 @@ export default function ChatPane({
               </DropdownMenu>
             </div>
 
-            <span className="text-[10px] text-white/10">ÃƒÂ¢Ã‚ÂÃ…Â½ Send Ãƒâ€šÃ‚Â· ÃƒÂ¢Ã¢â‚¬Â¡Ã‚Â§ÃƒÂ¢Ã‚ÂÃ…Â½ New line</span>
+            <span className="text-[10px] text-white/10">ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã‚Â½ Send ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã‚Â½ New line</span>
           </div>
         </div>
       </div>
